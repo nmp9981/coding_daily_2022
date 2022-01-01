@@ -1,0 +1,78 @@
+#include <iostream>
+#include <string>
+#include <vector>
+#include <algorithm>
+#include <cstring>
+#include <queue>
+using namespace std;
+
+int n,m,s;
+const int maxi = 401;
+const int inf = 80000000;
+int dp[maxi][maxi];//각 노드에서의 최단거리
+
+//입력
+void input(){
+    cin.tie(0);//빠른 입력
+    cin>>n>>m;
+    //초기화
+    for(int i=1;i<=n;i++){
+        for(int j=1;j<=n;j++){
+            if(i==j){
+                dp[i][j] = 0;
+            }else{
+                dp[i][j] = inf;
+            }
+        }
+    }
+    //입력
+    for(int i=1;i<=m;i++){
+        int a,b;
+        cin>>a>>b;
+        dp[a][b] = 1;
+    }
+}
+
+//플로이드 알고리즘
+void floyd(){
+    for(int k=1;k<=n;k++){//점k를 경유해서 가는가?
+        for(int i=1;i<=n;i++){
+            for(int j=1;j<=n;j++){
+                dp[i][j] = min(dp[i][j],dp[i][k]+dp[k][j]);
+            }
+        }
+    }
+    //역방향
+    for(int i=1;i<=n;i++){
+        for(int j=1;j<=n;j++){
+            if(dp[i][j]>0 && dp[i][j]<inf){
+                dp[j][i] = dp[i][j]*(-1);
+            }
+        }
+    }
+}
+
+//질문하기
+void question(){
+    //빠른 입출력
+    cin.tie(0);
+    cout.tie(0);
+    cin>>s;
+    for(int i=0;i<s;i++){
+        int a,b;
+        cin>>a>>b;
+        if(dp[a][b]==0 || dp[a][b]==inf){
+            cout<<0<<"\n";
+        }else if(dp[a][b]>0){
+            cout<<-1<<"\n";
+        }else if(dp[a][b]<0){
+            cout<<1<<"\n";
+        }
+    }
+}
+int main(){
+    input();//입력
+    floyd();//플로이드 알고리즘
+    question();//질문하기
+    return 0;
+}
