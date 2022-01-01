@@ -1,0 +1,81 @@
+#include <iostream>
+#include <string>
+#include <vector>
+#include <algorithm>
+#include <cstring>
+#include <queue>
+using namespace std;
+
+int n,m,s;
+const int maxi = 101;
+const int inf = 80000000;
+int dp[maxi][maxi];//각 노드에서의 최단거리
+int comp[maxi];//비교 불가능한 물건 수
+
+//입력
+void input(){
+    cin.tie(0);//빠른 입력
+    cin>>n>>m;
+    //초기화
+    for(int i=1;i<=n;i++){
+        for(int j=1;j<=n;j++){
+            if(i==j){//자기자신은 0으로
+                dp[i][j] = 0;
+            }else{
+                dp[i][j] = inf;
+            }
+        }
+    }
+    //입력
+    for(int i=1;i<=m;i++){
+        int a,b;
+        cin>>a>>b;
+        dp[a][b] = 1;
+    }
+}
+
+//플로이드 알고리즘
+void floyd(){
+    for(int k=1;k<=n;k++){//점k를 경유해서 가는가?
+        for(int i=1;i<=n;i++){
+            for(int j=1;j<=n;j++){
+                dp[i][j] = min(dp[i][j],dp[i][k]+dp[k][j]);
+            }
+        }
+    }
+}
+
+//검사하기
+void inspect(){
+    //행
+    for(int i=1;i<=n;i++){
+        int cnt = 0;
+        for(int j=1;j<=n;j++){
+            if(dp[i][j]>0 && dp[i][j]<inf){
+                cnt++;
+            }
+        }
+        comp[i] = cnt;
+    }
+    //열
+    for(int j=1;j<=n;j++){
+        int cnt = 0;
+        for(int i=1;i<=n;i++){
+            if(dp[i][j]>0 && dp[i][j]<inf){
+                cnt++;
+            }
+        }
+        comp[j] += cnt;
+    }
+    //검사
+    for(int i=1;i<=n;i++){
+        cout<<n-1-comp[i]<<"\n";
+    }
+}
+
+int main(){
+    input();//입력
+    floyd();//플로이드 알고리즘
+    inspect();//검사하기
+    return 0;
+}
