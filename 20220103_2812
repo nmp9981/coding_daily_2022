@@ -1,0 +1,67 @@
+#include <iostream>
+#include <string>
+#include <vector>
+#include <algorithm>
+#include <cstring>
+#include <stack>
+using namespace std;
+
+int n,k;
+const int maxi = 500001;
+int digit[maxi];//숫자
+stack<int> s;//숫자를 담는 스택
+int cnt = 0;
+vector<int> ans;//정답을 담는 배열
+
+//입력
+void input(){
+    cin.tie(0);//빠른 입력
+    cin>>n>>k;
+    //학생의 번호 입력
+    for(int i=0;i<n;i++){
+        scanf("%1d",&digit[i]);
+    }
+}
+
+//큰 수 만들기
+void bigger(){
+    s.push(digit[0]);
+    for(int i=1;i<n;i++){
+        while(!s.empty()){
+            //이전숫자가 더 크다면
+            if(s.top()>=digit[i]){
+                break;
+            }
+            //지우는횟수를 모두 채우면
+            if(cnt==k){
+                break;
+            }
+            s.pop();
+            cnt++;
+        }
+        s.push(digit[i]);//스택에 넣기
+    }
+    //남은 횟수 만큼 지우기
+    while(cnt<k){
+        s.pop();
+        cnt++;
+    }
+}
+
+//출력하기
+void output(){
+    while(!s.empty()){
+        ans.push_back(s.top());
+        s.pop();
+    }
+    for(int i=ans.size()-1;i>=0;i--){
+        cout<<ans[i];
+    }
+}
+
+int main(){
+    input();//입력
+    bigger();//큰 수 만들기
+    output();//출력
+    return 0;
+}
