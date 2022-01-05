@@ -1,0 +1,42 @@
+#include <iostream>
+#include <vector>
+#include <cmath>
+#include <algorithm>
+using namespace std;
+
+int n,m;
+const int inf = 10000000;
+int pack_price = inf;
+int single_price = inf;
+
+//패키지, 낱개 가격 구하기
+void cost(){
+    for(int i=0;i<m;i++){
+        int a,b;
+        cin>>a>>b;
+        pack_price = min(pack_price,a);
+        single_price = min(single_price,b);
+    }
+}
+
+//최소 가격
+void solve(){
+    int pack_single,only_pack,only_single;
+    //패키지 + 낱개
+    pack_single = n/6*pack_price+(n%6)*single_price;
+    //패키지만
+    only_pack = (n/6+1)*pack_price;
+    //낱개만
+    only_single = n*single_price;
+    
+    //가장 최솟값
+    cout<<min({pack_single,only_single,only_pack});
+}
+
+int main()
+{
+    cin>>n>>m;
+    cost();
+    solve();
+    return 0;
+}
