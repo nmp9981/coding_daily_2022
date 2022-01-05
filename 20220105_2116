@@ -1,0 +1,70 @@
+#include <iostream>
+#include <cstring>
+#include <vector>
+using namespace std;
+
+int n;
+const int maxi = 10001;
+int dice[maxi][6];
+
+//입력
+void input(){
+    cin>>n;
+    for(int i=0;i<n;i++){
+        for(int j=0;j<6;j++){
+            cin>>dice[i][j];
+        }
+    }
+}
+
+//윗면의 번호구하기
+int dice_num(int a){
+    if(a==0 || a==5){
+        return 5-a;
+    }else if(a==1 || a==3){
+        return 4-a;
+    }else if(a==2 || a==4){
+        return 6-a;
+    }
+    return 0;
+}
+
+//옆면의 합
+int side_dice(int x){
+    int total = 0;//옆면의 총합
+    for(int i=0;i<n;i++){
+        int next_num = dice_num(x);//윗면의 번호
+        int next_digit = dice[i][next_num];//다음 밑면의 숫자
+        //옆면 구하기
+        int sum = 0;
+        for(int j=0;j<6;j++){
+            if(j!=x && j!=next_num){
+                sum = max(sum,dice[i][j]);
+            }
+        }
+        total+=sum;
+        
+        //주사위를 모두 탐색
+        if(i==n-1){
+            break;
+        }else{
+            for(int j=0;j<6;j++){
+                if(dice[i+1][j]==next_digit){
+                    x=j;//다음 밑면의 번호
+                }
+            }
+        }
+    }
+    return total;
+}
+
+int main()
+{
+    input();//입력
+    int ans = 0;
+    for(int i=0;i<6;i++){//i번 밑면을 기준으로 했을때 결과
+        ans = max(ans,side_dice(i));
+    }
+    cout<<ans;//옆면
+    return 0;
+}
