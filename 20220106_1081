@@ -1,0 +1,47 @@
+#include <iostream>
+#include <cmath>
+using namespace std;
+
+long long l,u;
+long long point = 0;
+//각 숫자에서의 각 자리합 구하기
+long long cal(int x,int p){
+    long long sum = 0;
+    while(x>0){
+        sum+=(x%10);
+        x/=10;
+    }
+    return sum*pow(10,p)+45*p*pow(10,p-1);
+}
+
+//l~u
+void solve(){
+    long long total = 0;
+    while(l<=u){
+        //u의 일의자리수가 9
+        while(u%10!=9 && l<=u){
+            total+=cal(u,point);
+            u--;
+        }
+        //종료조건
+        if(l>u){
+            break;
+        }
+        //l의 일의자리가 0
+        while(l%10!=0 && l<=u){
+            total+=cal(l,point);
+            l++;
+        }
+        //숫자 갱신
+        u/=10;
+        l/=10;
+        point+=1;
+    }
+    cout<<total;
+}
+int main()
+{
+    cin>>l>>u;
+    solve();
+    return 0;
+}
