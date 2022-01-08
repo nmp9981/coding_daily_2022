@@ -1,0 +1,39 @@
+#include <iostream>
+#include <algorithm>
+using namespace std;
+
+int n,m;
+const int inf = 20000000;
+int pack = inf;
+int single = inf;
+
+//입력
+void input(){
+    cin>>n>>m;
+    for(int i=0;i<m;i++){
+        int a,b;
+        cin>>a>>b;
+        pack = min(pack,a);//낱개, 패키지의 각 최솟값
+        single = min(single,b);
+    }
+}
+
+//기타
+int guitar(){
+    int pack_single,pack_cost,single_cost;
+    //낱개 + 패키지
+    pack_single = (n/6)*pack+(n%6)*single;
+    //패키지
+    pack_cost = (n/6+1)*pack;
+    //낱개
+    single_cost = n*single;
+    //비용구하기
+    return min({pack_single,pack_cost,single_cost});
+}
+
+int main()
+{
+    input();//입력
+    cout<<guitar();//기타
+    return 0;
+}
