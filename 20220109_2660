@@ -1,0 +1,76 @@
+#include <iostream>
+#include <cstring>
+#include <vector>
+using namespace std;
+
+int n;
+const int maxi = 51;
+const int inf = 80000000;
+int dp[maxi][maxi];
+int score[maxi];
+vector<int> ans;
+
+//입력
+void input(){
+    cin>>n;
+    //초기화
+    for(int i=1;i<=n;i++){
+        for(int j=1;j<=n;j++){
+            if(i==j){
+                dp[i][j] = 0;
+            }else{
+                dp[i][j] = inf;
+            }
+        }
+    }
+    //입력
+    while(true){
+        int a,b;
+        cin>>a>>b;
+        if(a==-1 && b==-1){
+            break;
+        }
+        dp[a][b] = 1;//친구관계
+        dp[b][a] = 1;
+    }
+}
+
+//플로이드 알고리즘
+void floyd(){
+    for(int k=1;k<=n;k++){//점 k를 경유
+        for(int i=1;i<=n;i++){
+            for(int j=1;j<=n;j++){
+                //점 k경유 vs 그대로
+                dp[i][j] = min(dp[i][j],dp[i][k]+dp[k][j]);
+            }
+        }
+    }
+    //순위정하기
+    int present = inf;
+    for(int i=1;i<=n;i++){
+        int s = 0;
+        for(int j=1;j<=n;j++){
+            s = max(s,dp[i][j]);
+        }
+        score[i] = s;//각 후보의 점수
+        present = min(s,present);//회장의 점수
+    }
+    //출력
+    cout<<present<<" ";
+    for(int i=1;i<=n;i++){
+        if(score[i]==present){
+            ans.push_back(i);
+        }
+    }
+    cout<<ans.size()<<"\n";
+    for(int i=0;i<ans.size();i++){
+        cout<<ans[i]<<" ";
+    }
+}
+
+int main()
+{
+    input();//입력
+    floyd();//플로이드 알고리즘
+    return 0;
+}
