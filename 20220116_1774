@@ -1,0 +1,80 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <cmath>
+using namespace std;
+
+int n,m;
+const int maxi = 1001;
+int parent[maxi];
+double map_x[maxi];
+double map_y[maxi];
+vector<pair<double,pair<int,int>>> ufo;
+
+//입력
+void input(){
+    cin>>n>>m;
+    //부모노드 초기화
+    for(int i=1;i<=n;i++){
+        parent[i] = i;
+    }
+    //좌표 입력
+    for(int i=1;i<=n;i++){
+        cin>>map_x[i]>>map_y[i];
+    }
+    //이미 연결된것은 비용이 0
+    for(int i=0;i<m;i++){
+        int u,v;
+        cin>>u>>v;
+        ufo.push_back({0,{u,v}});
+    }
+    //거리구하기
+    for(int i=1;i<n;i++){
+        for(int j=i+1;j<=n;j++){
+            double dx = map_x[j]-map_x[i];
+            double dy = map_y[j]-map_y[i];
+            double dist = sqrt(dx*dx+dy*dy);
+            ufo.push_back({dist,{i,j}});
+        }
+    }
+    //벡터 정렬
+    sort(ufo.begin(),ufo.end());//거리기준 정렬
+}
+//각 노드의 부모노드 찾기
+int find(int h){
+    if(parent[h]==h){//루트노드이면
+        return h;
+    }
+    parent[h] = find(parent[h]);
+    return parent[h];
+}
+//크루스칼 알고리즘
+void kruskal(){
+    int node = 0;
+    double total = 0;
+    for(int i=0;i<ufo.size();i++){
+        int x = ufo[i].second.first;
+        int y = ufo[i].second.second;
+        double cost = ufo[i].first;
+        
+        //사이클을 이루고 있지 않다면 부모노드 연결
+        int px = find(x);
+        int py = find(y);
+        if(px!=py){
+            node++;
+            total+=cost;
+            parent[py] = px;
+        }
+        
+        //노드 완성
+        if(node==n-1){
+            printf("%.2f",total);
+            return;
+        }
+    }
+}
+int main(){
+    input();//입력
+    kruskal();//크루스칼
+    return 0;
+}
