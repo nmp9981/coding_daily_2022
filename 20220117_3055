@@ -1,0 +1,93 @@
+#include <iostream>
+#include <queue>
+#include <cstring>
+using namespace std;
+
+int r,c,ans;
+const int maxi = 51;
+string maps[maxi];
+bool visit[maxi][maxi];
+queue<pair<int,int>> hedgehog;
+queue<pair<int,int>> water;
+//축이동
+int dx[4] = {-1,1,0,0};
+int dy[4] = {0,0,-1,1};
+
+//입력
+void input(){
+    cin>>r>>c;
+    memset(visit,false,sizeof(visit));//초기화
+    for(int i=0;i<r;i++){
+        cin>>maps[i];
+        for(int j=0;j<c;j++){
+            if(maps[i][j]=='S'){//고슴도치
+                hedgehog.push({i,j});
+                visit[i][j]==true;
+            }
+            if(maps[i][j]=='*'){//물
+                water.push({i,j});
+            }
+        }
+    }
+}
+
+//너비우선탐색
+void bfs(){
+    while(!hedgehog.empty()){
+        //물이동
+        int ws = water.size();
+        for(int k=0;k<ws;k++){
+            int wx = water.front().first;
+            int wy = water.front().second;
+            water.pop();
+            
+            //다음지점
+            for(int i=0;i<4;i++){
+                int nwx = wx+dx[i];
+                int nwy = wy+dy[i];
+                //범위내에 들고 미방문
+                if(nwx>=0 && nwx<r && nwy>=0 && nwy<c){
+                    //비어있거나 고슴도치 지점
+                    if(maps[nwx][nwy]=='.'||maps[nwx][nwy]=='S'){
+                        maps[nwx][nwy]='*';//물이 찬다.
+                        water.push({nwx,nwy});
+                    }
+                }
+            }
+        }
+        //고슴도치 이동
+        int hs = hedgehog.size();
+        for(int k=0;k<hs;k++){
+            int hx = hedgehog.front().first;
+            int hy = hedgehog.front().second;
+            hedgehog.pop();
+            
+            //도착
+            if(maps[hx][hy]=='D'){
+                cout<<ans;
+                return;
+            }
+            
+            //다음지점
+            for(int i=0;i<4;i++){
+                int hwx = hx+dx[i];
+                int hwy = hy+dy[i];
+                //범위내에 들고 미방문
+                if(hwx>=0 && hwx<r && hwy>=0 && hwy<c && visit[hwx][hwy]==false){
+                    //비어있거나 비버의 소굴
+                    if(maps[hwx][hwy]=='.'|| maps[hwx][hwy]=='D'){
+                        visit[hwx][hwy]=true;//방문체크
+                        hedgehog.push({hwx,hwy});
+                    }
+                }
+            }
+        }
+        ans++;
+    }
+    cout<<"KAKTUS";//이동불가
+}
+int main(){
+    input();//입력
+    bfs();//진행
+    return 0;
+}
