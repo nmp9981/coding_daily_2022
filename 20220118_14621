@@ -1,0 +1,82 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+int n,m;
+const int maxi = 1001;
+char school[maxi];
+int parent[maxi];//각 노드의 부모노드
+vector<pair<int,pair<int,int>>> graph;//거리, 간선
+
+//입력
+void input(){
+    cin>>n>>m;
+    //부모노드 초기화, 학교입력
+    for(int i=1;i<=n;i++){
+        parent[i] = i;
+        cin>>school[i];
+    }
+    //그래프 입력
+    for(int i=0;i<m;i++){
+        int u,v,d;
+        cin>>u>>v>>d;
+        //학교가 서로 다른경우만 간선 넣기
+        if(school[u]!=school[v]){
+            graph.push_back({d,{u,v}});
+        }
+    }
+    //정렬
+    sort(graph.begin(),graph.end());//거리 기준으로 정렬
+}
+
+//각 노드의 부모노드
+int find(int p){
+    //루트노드이면
+    if(parent[p]==p){
+        return p;
+    }
+    parent[p] = find(parent[p]);
+    return parent[p];
+}
+
+//경로 합치기
+void uni(int p,int q){
+    if(p<q){
+        parent[q] = p;
+    }else{
+        parent[p] = q;
+    }
+}
+
+//크루스칼 알고리즘
+void kruskal(){
+    int node = 0;
+    int total = 0;
+    for(int i=0;i<graph.size();i++){
+        int cost = graph[i].first;
+        int x = graph[i].second.first;
+        int y = graph[i].second.second;
+        
+        //사이클이 아닐경우만 간선 추가
+        int a = find(x);
+        int b = find(y);
+        if(a!=b){
+            uni(a,b);
+            node++;
+            total+=cost;
+        }
+        
+        //경로 완성
+        if(node==n-1){
+            cout<<total;
+            return;
+        }
+    }
+    cout<<-1;//경로가 없다
+}
+int main(){
+    input();
+    kruskal();
+    return 0;
+}
