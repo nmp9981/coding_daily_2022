@@ -1,0 +1,36 @@
+#include <iostream>
+using namespace std;
+
+int n;
+const int maxi = 101;
+string dp_max[maxi] = {"0","0","1","7",};
+string dp_min[maxi] = {"0","0","1","7","4","2","6","8","10","18","22","20",};
+
+//최댓값 구하기
+void max_num(){
+    for(int i=4;i<maxi;i++){
+        dp_max[i] = dp_max[i-2] + '1';
+    }
+}
+
+//최솟값 구하기
+void min_num(){
+    for(int i=12;i<maxi;i++){
+        dp_min[i] = dp_min[i-7]+'8';
+        if(i==17){
+            dp_min[i] = "200";//예외
+        }
+    }
+}
+
+int main(){
+    int test;
+    cin>>test;
+    max_num();//최댓값 구하기
+    min_num();//최솟값 구하기
+    for(int t=0;t<test;t++){
+        cin>>n;
+        cout<<dp_min[n]<<" "<<dp_max[n]<<"\n";
+    }
+    return 0;
+}
