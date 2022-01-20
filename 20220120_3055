@@ -1,0 +1,94 @@
+#include <iostream>
+#include <queue>
+using namespace std;
+
+int r,c;
+const int maxi = 51;
+string maps[maxi];
+bool visit[maxi][maxi];//방문체크
+queue<pair<int,int>> Hedgehog;//고슴도치
+queue<pair<int,int>> water;//물
+//축이동
+int dx[4] = {-1,1,0,0};
+int dy[4] = {0,0,-1,1};
+
+//입력
+void input(){
+    cin>>r>>c;
+    for(int i=0;i<r;i++){
+        cin>>maps[i];
+        //초기 위치 넣기
+        for(int j=0;j<c;j++){
+            if(maps[i][j]=='S'){//고슴도치
+                visit[i][j] = true;
+                Hedgehog.push({i,j});
+            }
+            if(maps[i][j]=='*'){//물
+                water.push({i,j});
+            }
+        }
+    }
+}
+
+//탈출
+void escape(){
+    int ans = 0;
+    while(!Hedgehog.empty()){
+        //물 이동
+        int ws = water.size();
+        for(int i=0;i<ws;i++){
+            int wx = water.front().first;
+            int wy = water.front().second;
+            water.pop();
+            
+            //다음지점
+            for(int j=0;j<4;j++){
+                int next_wx = wx + dx[j];
+                int next_wy = wy + dy[j];
+                //범위내에 들고
+                if(next_wx>=0 && next_wx<r && next_wy>=0 && next_wy<c){
+                    //미방문
+                    if(maps[next_wx][next_wy]=='.' || maps[next_wx][next_wy]=='S'){
+                        water.push({next_wx,next_wy});
+                        maps[next_wx][next_wy] = '*';//물이 찬다
+                    }
+                }
+            }
+        }
+        //고슴도치 이동
+        int hs = Hedgehog.size();
+        for(int i=0;i<hs;i++){
+            int hx = Hedgehog.front().first;
+            int hy = Hedgehog.front().second;
+            Hedgehog.pop();
+            
+            //비버의 굴에 도착
+            if(maps[hx][hy]=='D'){
+                cout<<ans;
+                return;
+            }
+            //다음지점
+            for(int j=0;j<4;j++){
+                int next_hx = hx + dx[j];
+                int next_hy = hy + dy[j];
+                //범위내에 들고
+                if(next_hx>=0 && next_hx<r && next_hy>=0 && next_hy<c){
+                    //미방문
+                    if(visit[next_hx][next_hy]==false){
+                        if(maps[next_hx][next_hy]=='.' || maps[next_hx][next_hy]=='D'){
+                            Hedgehog.push({next_hx,next_hy});
+                            visit[next_hx][next_hy] = true;
+                        }
+                    }
+                }
+            }
+        }
+        ans++;
+    }
+    cout<<"KAKTUS";//이동불가
+}
+int main(){
+    input();//입력
+    escape();//탈출
+    return 0;
+}
