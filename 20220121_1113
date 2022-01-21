@@ -1,0 +1,82 @@
+#include <iostream>
+#include <queue>
+#include <cstring>
+using namespace std;
+
+int n,m,deep;
+const int maxi = 51;
+int maps[maxi][maxi];//지도
+bool visit[maxi][maxi];//방문여부
+//축이동
+int dx[4] = {-1,1,0,0};
+int dy[4] = {0,0,-1,1};
+
+//입력
+void input(){
+    cin>>n>>m;
+    for(int i=0;i<n;i++){
+        for(int j=0;j<m;j++){
+            scanf("%1d",&maps[i][j]);
+            deep = max(deep,maps[i][j]);//최대 높이 갱신
+        }
+    }
+}
+
+//bfs 탐색
+int bfs(int i,int j,int depth){
+    bool flag = true;//수영장을 이루는가?
+    int water = 1;//시작지점 채우기
+    queue<pair<int,int>> q;
+    q.push({i,j});
+    visit[i][j] = true;//방문체크
+    //큐가 빌때까지
+    while(!q.empty()){
+        int x = q.front().first;
+        int y = q.front().second;
+        q.pop();
+        
+        //다음지점 탐색
+        for(int k=0;k<4;k++){
+            int nx = x + dx[k];
+            int ny = y + dy[k];
+            //범위를 벗어나면
+            if(nx<0 || nx>=n || ny<0 || ny>=m){
+                flag = false;
+                continue;
+            }
+            //미방문이고 높이가 더 낮음
+            if(visit[nx][ny]==false && maps[nx][ny]<=depth){
+                visit[nx][ny] = true;
+                water++;
+                q.push({nx,ny});
+            }
+        }
+    }
+    //수영장을 이루는가?
+    if(flag == true){
+        return water;
+    }
+    return 0;
+}
+//수영장 물 채우기
+void swimming(){
+    int total = 0;//총 물의 양
+    for(int h=1;h<=deep;h++){
+        memset(visit,false,sizeof(visit));//방문지점 초기화
+        for(int i=0;i<n;i++){
+            for(int j=0;j<m;j++){
+                //미방문이고 높이가 h이하면
+                if(visit[i][j]==false && maps[i][j]<=h){
+                    total+=bfs(i,j,h);
+                }
+            }
+        }
+    }
+    cout<<total;
+}
+
+int main(){
+    input();//입력
+    swimming();//수영장 물 채우기
+    return 0;
+}
