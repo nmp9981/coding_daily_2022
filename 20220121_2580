@@ -1,0 +1,91 @@
+#include <iostream>
+#include <vector>
+using namespace std;
+
+int cnt;
+int sudoku[9][9];//스도쿠
+vector<pair<int,int>> blank;//빈칸 
+
+//입력
+void input(){
+    for(int i=0;i<9;i++){
+        for(int j=0;j<9;j++){
+            cin>>sudoku[i][j];
+            //빈칸 넣기
+            if(sudoku[i][j]==0){
+                blank.push_back({i,j});
+                cnt++;
+            }
+        }
+    }
+}
+
+//행검사
+bool row(int r,int m){
+    for(int i=0;i<9;i++){
+        if(sudoku[r][i]==m){
+            return false;
+        }
+    }
+    return true;
+}
+
+//열검사
+bool col(int c,int m){
+    for(int i=0;i<9;i++){
+        if(sudoku[i][c]==m){
+            return false;
+        }
+    }
+    return true;
+}
+
+//3*3검사
+bool box(int r,int c,int m){
+    int box_x = (r/3)*3;
+    int box_y = (c/3)*3;
+    for(int i=0;i<3;i++){
+        for(int j=0;j<3;j++){
+            if(sudoku[i+box_x][j+box_y]==m){
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+//출력
+void output(){
+    for(int i=0;i<9;i++){
+        for(int j=0;j<9;j++){
+            cout<<sudoku[i][j]<<" ";
+        }
+        cout<<"\n";
+    }
+}
+
+//스도쿠 풀기
+void solve(int n){
+    //빈칸을 모두 채웠으면
+    if(n==cnt){
+        output();//출력
+        exit(0);//답이 1개 나왔으면 즉시 종료
+    }
+    //1~9까지 모든 숫자를 넣기
+    for(int k=1;k<=9;k++){
+        int x = blank[n].first;
+        int y = blank[n].second;
+        //스도쿠 조건을 만족하면
+        if(row(x,k) && col(y,k) && box(x,y,k)){
+            sudoku[x][y] = k;
+            solve(n+1);//다음 빈칸으로
+            sudoku[x][y] = 0;//원래대로
+        }
+    }
+}
+
+int main(){
+    input();//입력
+    solve(0);//풀이
+    return 0;
+}
