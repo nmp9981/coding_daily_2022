@@ -1,0 +1,95 @@
+#include <iostream>
+#include <vector>
+#include <queue>
+using namespace std;
+
+int n;
+const int maxi = 500;
+int maps[maxi][maxi];//지도
+int percent[10] = {1,1,2,2,7,7,10,10,5,55};//흩날리는 비율
+int scatter_x[4][10] = {
+    {-1,1,-2,2,-1,1,-1,1,0,0},
+    {-1,-1,0,0,0,0,1,1,2,1},
+    {-1,1,-2,2,-1,1,-1,1,0,0},
+    {1,1,0,0,0,0,-1,-1,-2,-1}
+};
+int scatter_y[4][10] = {
+    {1,1,0,0,0,0,-1,-1,-2,-1},
+    {-1,1,-2,2,-1,1,-1,1,0,0},
+    {-1,-1,0,0,0,0,1,1,2,1},
+    {-1,1,-2,2,-1,1,-1,1,0,0}
+};
+//축이동
+int dx[4] = {0,1,0,-1};
+int dy[4] = {-1,0,1,0};
+
+//입력
+void input(){
+    cin>>n;
+    for(int i=0;i<n;i++){
+        for(int j=0;j<n;j++){
+            cin>>maps[i][j];
+        }
+    }
+}
+
+//나가는 모래의 양
+int out_sand(int r,int c,int dir){
+    int amount = maps[r][c];//전체 모래의 양
+    int out_amount = 0;//나가는 모래의 양
+    //현재 칸의 모래의 개수가 0이면 다음으로
+    if(amount==0){
+        return 0;
+    }
+    //모래 흩날리기
+    for(int k=0;k<10;k++){
+        int sx = r + scatter_x[dir][k];
+        int sy = c + scatter_y[dir][k];
+        int rest = maps[r][c]*percent[k]/100;
+        //남은것
+        if(k==9){
+            rest = amount;
+        }
+        //범위내에 드는가?
+        if(sx>=0 && sx<n && sy>=0 && sy<n){
+            maps[sx][sy] += rest;//모래누적
+        }else{
+            out_amount += rest;//나가는 양 누적
+        }
+        amount -= rest;
+    }
+    //모든모래 이동
+    maps[r][c] = 0;
+    return out_amount;
+}
+
+//토네이도 이동
+void move_tornado(int x,int y){
+    int total = 0;//총 모래의 양
+    int lenth = 0;//직선 이동량
+    while(true){
+        //방향결정
+        for(int i=0;i<4;i++){
+            if(i%2==0){//직선 이동량 변화
+                lenth++;
+            }
+            //이동
+            for(int j=0;j<lenth;j++){
+                x = x + dx[i];//위치는 계속 변경
+                y = y + dy[i];
+                total+=out_sand(x,y,i);//나가는 모래양 누적
+                //도착
+                if(x==0 && y==0){
+                    cout<<total;
+                    return;
+                }
+            }
+        }
+    }
+}
+
+int main(){
+    input();//입력
+    move_tornado(n/2,n/2);//토네이도 이동
+    return 0;
+}
