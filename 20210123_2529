@@ -1,0 +1,69 @@
+#include <iostream>
+#include <cmath>
+#include <cstring>
+using namespace std;
+typedef long long ll;
+
+int k;
+ll max_num,next_num;
+ll min_num = 9999999999;
+bool visit[10];//방문여부
+char sign[9];
+
+//입력
+void input(){
+    cin>>k;
+    for(int i=0;i<k;i++){
+        cin>>sign[i];
+    }
+}
+
+//재귀
+void dfs(ll n,int idx,ll total){
+    //자릿수가 모두 채워지면 갱신
+    if(idx==k){
+        max_num = max(total,max_num);
+        min_num = min(total,min_num);
+        return;
+    }
+    //다음숫자
+    for(ll j=0;j<10;j++){
+        if(visit[j]==false){
+            //부등호가 성립하는가?
+            if(sign[idx]=='<' && n<j){
+                next_num = 10*total+j;
+                visit[j] = true;//방문체크
+                dfs(j,idx+1,next_num);//재귀
+                visit[j] = false;//방문체크 해제
+            }else if(sign[idx]=='>' && n>j){
+                next_num = 10*total+j;
+                visit[j] = true;//방문체크
+                dfs(j,idx+1,next_num);//재귀
+                visit[j] = false;//방문체크 해제
+            }
+        }
+    }
+}
+int main(){
+    input();//입력
+    //0~9까지의 숫자를 넣어본다
+    for(ll i=0;i<=9;i++){
+        memset(visit,false,sizeof(visit));
+        visit[i] = true;
+        dfs(i,0,i);//숫자, 인덱스, 누적값
+    }
+    
+    //출력
+    ll cut = pow(10,k);
+    if(max_num<cut){
+        cout<<'0'<<max_num<<"\n";
+    }else{
+        cout<<max_num<<"\n";
+    }
+    if(min_num<cut){
+        cout<<'0'<<min_num<<"\n";
+    }else{
+        cout<<min_num<<"\n";
+    }
+    return 0;
+}
