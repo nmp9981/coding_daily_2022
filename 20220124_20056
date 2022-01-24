@@ -1,0 +1,118 @@
+#include <iostream>
+#include <vector>
+using namespace std;
+//구조체 정의
+struct fireball{
+    //위치, 질량, 속도, 방향
+    int fire_x,fire_y,mass,speed,direction;
+};
+
+int n,m,k;
+const int maxi = 51;
+vector<fireball> fire;//현재 있는 파이어볼
+vector<fireball> maps[maxi][maxi];//맵
+//축 이동
+int dx[8] = {-1,-1,0,1,1,1,0,-1};
+int dy[8] = {0,1,1,1,0,-1,-1,-1};
+
+//입력
+void input(){
+    cin>>n>>m>>k;
+    while(m--){
+        int r,c,m,s,d;
+        cin>>r>>c>>m>>s>>d;
+        //지도는 0번부터 시작
+        fire.push_back({r-1,c-1,m,s,d});
+    }
+}
+
+//초기화
+void init(){
+    for(int i=0;i<n;i++){
+        for(int j=0;j<n;j++){
+            maps[i][j].clear();
+        }
+    }
+}
+
+//파이어볼 합치기
+void fireball_sum(){
+    vector<fireball> temp;
+    //맵을 탐색하면서 진행
+    for(int i=0;i<n;i++){
+        for(int j=0;j<n;j++){
+            //겹치는게 몇개인가?
+            int cnt = maps[i][j].size();
+            if(cnt==0){
+                continue;
+            }
+            if(cnt==1){
+                temp.push_back(maps[i][j][0]);
+                continue;
+            }
+            //2개 이상일 경우만 겹친다.
+            int total_mass = 0;
+            int total_speed = 0;
+            int odd = 0;//홀수
+            int even = 0;//짝수
+            for(int k=0;k<cnt;k++){
+                total_mass+=maps[i][j][k].mass;
+                total_speed+=maps[i][j][k].speed;
+                //방향 판정
+                if(maps[i][j][k].direction%2==0){
+                    even++;
+                }else{
+                    odd++;
+                }
+            }
+            //파이어볼 나누기
+            int new_mass = total_mass/5;
+            int new_speed = total_speed/cnt;
+            if(new_mass==0){//질량이 0이면 소멸
+                continue;
+            }
+            if(even==0 || odd==0){//모두 짝수거나 홀수
+                for(int k=0;k<4;k++){
+                    temp.push_back({i,j,new_mass,new_speed,2*k});
+                }
+            }else{
+                for(int k=0;k<4;k++){
+                    temp.push_back({i,j,new_mass,new_speed,2*k+1});
+                }
+            }
+        }
+    }
+    fire = temp;//파이어볼 리스트 갱신
+}
+//파이어볼 이동
+void move(){
+    while(k--){
+        init();//초기화
+        for(int i=0;i<fire.size();i++){
+            int x = fire[i].fire_x;//위치
+            int y = fire[i].fire_y;
+            int mass = fire[i].mass;//질량
+            int speed = fire[i].speed;//속도
+            int dir = fire[i].direction;//방향
+            
+            //다음지점
+            int nx = (x + n + (speed%n)*dx[dir])%n;
+            int ny = (y + n + (speed%n)*dy[dir])%n;
+            maps[nx][ny].push_back({nx,ny,mass,speed,dir});
+            fire[i].fire_x = nx;
+            fire[i].fire_y = ny;
+        }
+        fireball_sum();//합치기
+    }
+    //남은 질량 구하기
+    int ans = 0;
+    for(int i=0;i<fire.size();i++){
+        ans+=fire[i].mass;
+    }
+    cout<<ans;//출력
+}
+int main(){
+    input();//입력
+    move();//파이어볼 이동
+    return 0;
+}
