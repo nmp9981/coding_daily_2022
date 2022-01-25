@@ -1,0 +1,81 @@
+#include <iostream>
+#include <cstring>
+#include <queue>
+using namespace std;
+
+int n,m,max_deep;
+const int maxi = 51;
+int maps[maxi][maxi];//지도
+bool visit[maxi][maxi];//방문체크
+//축이동
+int dx[4] = {-1,1,0,0};
+int dy[4] = {0,0,-1,1};
+
+//입력
+void input(){
+    cin>>n>>m;
+    for(int i=0;i<n;i++){
+        for(int j=0;j<m;j++){
+            scanf("%1d",&maps[i][j]);
+            max_deep = max(maps[i][j],max_deep);
+        }
+    }
+}
+
+//탐색
+int bfs(int i,int j,int depth){
+    queue<pair<int,int>> q;
+    q.push({i,j});
+    int water = 1;//시작지점 채우기
+    bool flag = true;
+    
+    while(!q.empty()){
+        int x = q.front().first;
+        int y = q.front().second;
+        q.pop();
+        //다음지점
+        for(int k=0;k<4;k++){
+            int nx = x + dx[k];
+            int ny = y + dy[k];
+            //범위 밖으로 벗어나면
+            if(nx<0 || nx>=n || ny<0 || ny>=m){
+                flag = false;
+                continue;
+            }
+            //미방문이고 높이 조건 만족
+            if(visit[nx][ny]==false && maps[nx][ny]<=depth){//높이 조건
+                visit[nx][ny] = true;//방문체크
+                q.push({nx,ny});
+                water++;
+            }
+        }
+    }
+    //물을 채울 수 있는가?
+    if(flag==false){
+        return 0;
+    }
+    return water;
+}
+//물채우기
+void water_fill(){
+    int ans = 0;
+    for(int h=1;h<max_deep;h++){//한층씩 탐색
+        memset(visit,false,sizeof(visit));
+        //맵탐색
+        for(int i=0;i<n;i++){
+            for(int j=0;j<m;j++){
+                //미방문이고 물을 채울 수 있는 높이면
+                if(maps[i][j]<=h && visit[i][j]==false){
+                    visit[i][j] = true;
+                    ans+=bfs(i,j,h);
+                }
+            }
+        }
+    }
+    cout<<ans;
+}
+int main(){
+    input();//입력
+    water_fill();//수영장 물 채우기
+    return 0;
+}
