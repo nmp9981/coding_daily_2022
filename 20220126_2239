@@ -1,0 +1,88 @@
+#include <iostream>
+#include <vector>
+using namespace std;
+
+int sudoku[9][9];
+vector<pair<int,int>> blank;
+int cnt = 0;
+
+//입력
+void input(){
+    for(int i=0;i<9;i++){
+        for(int j=0;j<9;j++){
+            scanf("%1d",&sudoku[i][j]);
+            if(sudoku[i][j]==0){
+                blank.push_back({i,j});
+                cnt++;
+            }
+        }
+    }
+}
+
+//출력
+void output(){
+    for(int i=0;i<9;i++){
+        for(int j=0;j<9;j++){
+            cout<<sudoku[i][j];
+        }
+        cout<<"\n";
+    }
+}
+
+//행조건
+bool row(int x,int n){
+    for(int i=0;i<9;i++){
+        if(sudoku[x][i]==n){
+            return false;
+        }
+    }
+    return true;
+}
+
+//열조건
+bool col(int y,int n){
+    for(int i=0;i<9;i++){
+        if(sudoku[i][y]==n){
+            return false;
+        }
+    }
+    return true;
+}
+
+//박스조건
+bool box(int x,int y,int n){
+    int st_x = (x/3)*3;
+    int st_y = (y/3)*3;
+    for(int i=0;i<3;i++){
+        for(int j=0;j<3;j++){
+            if(sudoku[st_x+i][st_y+j]==n){
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+//풀이
+void solve(int idx){
+    if(idx==cnt){
+        output();
+        exit(0);
+    }
+    //다음숫자
+    for(int i=1;i<=9;i++){
+        int nx = blank[idx].first;
+        int ny = blank[idx].second;
+        if(row(nx,i) && col(ny,i) && box(nx,ny,i)){
+            sudoku[nx][ny] = i;
+            solve(idx+1);
+            sudoku[nx][ny] = 0;
+        }
+    }
+}
+int main(){
+    input();//입력
+    solve(0);//풀이
+    output();//출력
+    return 0;
+}
