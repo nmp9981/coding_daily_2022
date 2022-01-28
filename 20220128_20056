@@ -1,0 +1,114 @@
+#include <iostream>
+#include <vector>
+using namespace std;
+
+//파이어볼 정보
+struct fireball_info{
+    int r,c,mass,speed,direction;
+};
+
+int N,M,K;
+const int maxi = 51;
+vector<fireball_info> fireball;
+vector<fireball_info> maps[maxi][maxi];
+//축이동
+int dx[8] = {-1,-1,0,1,1,1,0,-1};
+int dy[8] = {0,1,1,1,0,-1,-1,-1};
+
+//입력
+void input(){
+    cin>>N>>M>>K;
+    for(int i=0;i<M;i++){
+        int r,c,m,s,d;
+        cin>>r>>c>>m>>s>>d;
+        fireball.push_back({r-1,c-1,m,s,d});
+    }
+}
+
+//초기화
+void init(){
+    for(int i=0;i<N;i++){
+        for(int j=0;j<N;j++){
+            maps[i][j].clear();
+        }
+    }
+}
+
+//파이어볼 합치기
+void fireball_add(){
+    vector<fireball_info> temp;
+    for(int i=0;i<N;i++){
+        for(int j=0;j<N;j++){
+            int cnt = maps[i][j].size();
+            //합치지 않을 경우
+            if(cnt==0){
+                continue;
+            }
+            if(cnt==1){//그대로 넣는다.
+                temp.push_back(maps[i][j][0]);
+                continue;
+            }
+            //파이어볼 합치기
+            int total_mass = 0;int total_speed = 0;
+            int even = 0;int odd = 0;
+            for(int k=0;k<cnt;k++){
+                total_mass+=maps[i][j][k].mass;
+                total_speed+=maps[i][j][k].speed;
+                //방향 분간
+                if(maps[i][j][k].direction%2==0){
+                    even++;
+                }else{
+                    odd++;
+                }
+            }
+            //새로운 질량,스피드
+            int new_mass = total_mass/5;
+            int new_speed = total_speed/cnt;
+            if(new_mass==0){//질량이 0인것은 소멸
+                continue;
+            }
+            //4개로 나누기
+            if(even==0 || odd==0){
+                for(int k=0;k<4;k++){
+                    temp.push_back({i,j,new_mass,new_speed,2*k});
+                }
+            }else{
+                for(int k=0;k<4;k++){
+                    temp.push_back({i,j,new_mass,new_speed,2*k+1});
+                }
+            }
+        }
+    }
+    fireball = temp;
+}
+
+//파이어볼 이동
+void move(){
+    while(K--){
+        init();//초기화
+        for(int i=0;i<fireball.size();i++){
+            int fx = fireball[i].r;
+            int fy = fireball[i].c;
+            int mass = fireball[i].mass;
+            int speed = fireball[i].speed;
+            int dir = fireball[i].direction;
+            
+            //다음칸으로 이동
+            int nx = (fx + N + (speed%N)*dx[dir])%N;
+            int ny = (fy + N + (speed%N)*dy[dir])%N;
+            maps[nx][ny].push_back({nx,ny,mass,speed,dir});
+        }
+        fireball_add();//파이어볼 합치기
+    }
+    //질량의 합 구하기
+    int ans = 0;
+    for(int i=0;i<fireball.size();i++){
+        ans+=fireball[i].mass;
+    }
+    cout<<ans;
+}
+int main(){
+    input();//입력
+    move();//파이어볼 이동
+    return 0;
+}
