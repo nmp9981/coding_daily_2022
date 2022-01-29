@@ -1,0 +1,35 @@
+#include <iostream>
+using namespace std;
+typedef long long ll;
+
+const int maxi = 5001;
+const ll mod = 1000000007;
+ll dp[maxi];//n일때 완전한 괄호의 개수
+
+//괄호 dp
+void parenthesis(){
+    dp[0] = 1;
+    dp[2] = 1;
+    dp[4] = 2;
+    for(int i=6;i<maxi;i++){
+        for(int j=0;j<=i-2;j++){
+            dp[i]+=dp[j]*dp[i-j-2];
+            dp[i]%=mod;
+        }
+    }
+}
+
+int main(){
+    int t,n;
+    parenthesis();//괄호
+    cin>>t;
+    while(t--){
+        cin>>n;
+        if(n%2==1){
+            cout<<0<<"\n";
+            continue;
+        }
+        cout<<dp[n]<<"\n";
+    }
+    return 0;
+}
