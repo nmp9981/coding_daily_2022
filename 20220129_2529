@@ -1,0 +1,69 @@
+#include <iostream>
+#include <cstring>
+#include <cmath>
+using namespace std;
+typedef long long ll;
+
+int k;
+const ll inf = 99999999999;
+char sign[10];//부등호
+bool visit[10];//방문 체크
+ll min_num = inf;ll max_num = 0;
+
+//입력
+void input(){
+    cin>>k;
+    for(int i=0;i<k;i++){
+        cin>>sign[i];
+    }
+}
+
+//재귀
+void dfs(ll n,int idx,ll digit){
+    //자릿수를 모두 채우면
+    if(idx==k){
+        min_num = min(n,min_num);
+        max_num = max(n,max_num);
+        return;
+    }
+    //다음숫자
+    for(int j=0;j<=9;j++){
+        //미방문이면
+        if(visit[j]==false){
+            //부등호 조건이 맞는가?
+            if(sign[idx]=='<' && digit<j){
+                visit[j] = true;//방문체크
+                dfs(10*n+j,idx+1,j);
+                visit[j] = false;//방문체크 해제
+            }
+            if(sign[idx]=='>' && digit>j){
+                visit[j] = true;//방문체크
+                dfs(10*n+j,idx+1,j);
+                visit[j] = false;//방문체크 해제
+            }
+        }
+    }
+}
+
+int main(){
+    input();//입력
+    //첫숫자
+    for(int i=0;i<=9;i++){
+        memset(visit,false,sizeof(visit));
+        visit[i] = true;//방문체크
+        dfs(i,0,i);//누적 숫자 ,자릿수,숫자
+    }
+    //출력
+    ll cut = pow(10,k);
+    if(max_num<cut){
+        cout<<'0'<<max_num<<"\n";
+    }else{
+        cout<<max_num<<"\n";
+    }
+    if(min_num<cut){
+        cout<<'0'<<min_num<<"\n";
+    }else{
+        cout<<min_num<<"\n";
+    }
+    return 0;
+}
