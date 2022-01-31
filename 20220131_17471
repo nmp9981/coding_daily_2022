@@ -1,0 +1,132 @@
+#include <iostream>
+#include <vector>
+#include <cstring>
+#include <queue>
+using namespace std;
+
+int n;
+const int maxi = 11;
+const int inf = 987654321;
+int ans = inf;
+int people[maxi];//사람 수
+vector<int> graph[maxi];//그래프(인접리스트)
+bool selected[maxi];//레드팀 선발
+bool visit[maxi];//방문여부
+
+//입력
+void input(){
+    cin>>n;
+    for(int i=1;i<=n;i++){
+        cin>>people[i];
+    }
+    //인접리스트로 구현
+    for(int i=1;i<=n;i++){
+        int a,b;
+        cin>>a;
+        for(int j=1;j<=a;j++){
+            cin>>b;
+            graph[i].push_back(b);//양방향 그래프
+            graph[b].push_back(i);
+        }
+    }
+    memset(selected,false,sizeof(selected));//초기화
+}
+
+//연결 검사
+bool bfs(vector<int> v,bool tf){
+    memset(visit,false,sizeof(visit));
+    queue<int> q;
+    q.push(v[0]);
+    int cnt = 1;
+    visit[v[0]] = true;//방문체크
+    
+    while(!q.empty()){
+        int x = q.front();
+        q.pop();
+        //다음지점 탐색
+        for(int i=0;i<graph[x].size();i++){
+            int nx = graph[x][i];
+            //미방문이고 팀이 일치
+            if(visit[nx]==false && selected[nx]==tf){
+                visit[nx] = true;//방문체크
+                q.push(nx);
+                cnt++;
+            }
+        }
+    }
+    //인원 검사
+    if(cnt==v.size()){
+        return true;
+    }
+    return false;
+}
+
+//연결 되어 있는가?
+bool is_connect(){
+    vector<int> red_team;
+    vector<int> blue_team;
+    for(int i=1;i<=n;i++){
+        if(selected[i]==true){//레드팀
+            red_team.push_back(i);
+        }else{//블루팀
+            blue_team.push_back(i);
+        }
+    }
+    
+    //사이즈가 맞는가?
+    if(red_team.size()==0 || blue_team.size()==0){
+        return false;
+    }
+    //각 팀은 연결된 상태인가?
+    if(bfs(red_team,true)==false){
+        return false;
+    }
+    if(bfs(blue_team,false)==false){
+        return false;
+    }
+    return true;
+}
+
+//인구수 차이 구하기
+int diff_person(){
+    int red = 0;int blue = 0;
+    for(int i=1;i<=n;i++){
+        if(selected[i]==true){//레드팀
+            red+=people[i];
+        }else{//블루팀
+            blue+=people[i];
+        }
+    }
+    int diff = abs(red-blue);
+    return diff;
+}
+
+//레드팀 선택
+void dfs(int idx,int cnt){
+    //개수가 1개 이상이면
+    if(cnt>=1){
+        if(is_connect()){//두 팀이 연결되었으면
+            ans = min(ans,diff_person());//인구수의 차이를 구함
+        }
+    }
+    //조합등록
+    for(int i=idx;i<=n;i++){
+        if(selected[i]==false){//미방문이면
+            selected[i] = true;//방문체크
+            dfs(idx+1,cnt+1);//재귀
+            selected[i] = false;//체크 해제
+        }
+    }
+}
+
+int main(){
+    input();//입력
+    dfs(1,0);//조합선택
+    //출력
+    if(ans==inf){
+        cout<<-1;
+    }else{
+        cout<<ans;
+    }
+    return 0;
+}
