@@ -1,0 +1,49 @@
+#include <iostream>
+#include <cmath>
+#include <vector>
+using namespace std;
+
+int k,idx;
+const int maxi = 31;
+int pow2[maxi] = {1,};//2의 거듭제곱
+int sum_pow2[maxi] = {0,};//2의 거듭제곱 누적
+vector<int> ans;//정답 벡터
+
+//2^n배열 만들기
+void make_pow2(){
+    for(int i=1;i<maxi;i++){
+        pow2[i] = pow(2,i);
+        sum_pow2[i] = sum_pow2[i-1]+pow2[i];
+    }
+}
+
+void solve(){
+    cin>>k;
+    //k는 몇자리수인가?
+    for(int i=1;i<maxi;i++){
+        if(sum_pow2[i]>=k){
+            idx = i;
+            break;
+        }
+    }
+    //k번째 수 구하기
+    k-=sum_pow2[idx-1];
+    while(idx>0){
+        if(k>pow2[idx-1]){
+            k-=pow2[idx-1];
+            ans.push_back(7);
+        }else{
+            ans.push_back(4);
+        }
+        idx--;
+    }
+    //출력
+    for(int i=0;i<ans.size();i++){
+        cout<<ans[i];
+    }
+}
+int main(){
+    make_pow2();//2^n배열 만들기
+    solve();
+    return 0;
+}
