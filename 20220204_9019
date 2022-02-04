@@ -1,0 +1,63 @@
+#include <iostream>
+#include <queue>
+#include <cstring>
+using namespace std;
+
+const int maxi = 10001;
+bool visit[maxi];
+string cmd[4] = {"D","S","L","R"};
+
+//DSLR계산
+int DSLR(int x,int i){
+    int result;
+    if(i==0){
+        result = (2*x)%10000; 
+    }else if(i==1){
+        result = (x+9999)%10000;
+    }else if(i==2){
+        result = (x%1000)*10+x/1000;
+    }else if(i==3){
+        result = (x%10)*1000+x/10;
+    }
+    return result;
+}
+//탐색
+void bfs(int a,int b){
+    memset(visit,false,sizeof(visit));//초기화
+    visit[a] = true;
+    queue<pair<int,string>> q;
+    q.push({a,""});
+    
+    while(!q.empty()){
+        int x = q.front().first;
+        string c = q.front().second;//이전 명령어 저장
+        q.pop();
+        
+        //도착
+        if(x==b){
+            cout<<c<<"\n";
+            return;
+        }
+        //다음지점
+        for(int i=0;i<4;i++){
+            int nx = DSLR(x,i);
+            //미방문이면
+            if(visit[nx]==false){
+                visit[nx] = true;//방문체크
+                q.push({nx,c+cmd[i]});//이전 경로 저장
+            }
+        }
+    }
+}
+int main(){
+    int test;
+    cin>>test;
+    while(test--){
+        cin.tie(0);//빠른 입출력
+        cout.tie(0);
+        int a,b;
+        cin>>a>>b;
+        bfs(a,b);//탐색
+    }
+    return 0;
+}
