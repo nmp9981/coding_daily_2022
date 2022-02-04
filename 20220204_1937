@@ -1,0 +1,57 @@
+#include <iostream>
+#include <cstring>
+using namespace std;
+
+int n;
+const int maxi = 501;
+int maps[maxi][maxi];
+int dp[maxi][maxi];
+int ans = 0;
+//축 이동
+int dx[4] = {-1,1,0,0};
+int dy[4] = {0,0,-1,1};
+
+//입력
+void input(){
+    cin>>n;
+    for(int i=0;i<n;i++){
+        for(int j=0;j<n;j++){
+            cin>>maps[i][j];
+        }
+    }
+    memset(dp,-1,sizeof(dp));
+}
+
+//판다이동
+int dfs(int x,int y){
+    if(dp[x][y]!=-1){//이미 값이 있는 경우
+        return dp[x][y];
+    }
+    //다음지점
+    int cnt = 0;
+    for(int k=0;k<4;k++){
+        int nx = x + dx[k];
+        int ny = y + dy[k];
+        //범위내에 드는가?
+        if(nx<0 || nx>=n || ny<0 || ny>=n){
+            continue;
+        }
+        //대나무가 더 많으면
+        if(maps[nx][ny]>maps[x][y]){
+            cnt = max(dfs(nx,ny),cnt);
+        }
+    }
+    return dp[x][y] = cnt+1;
+}
+
+int main(){
+    input();//입력
+    for(int i=0;i<n;i++){
+        for(int j=0;j<n;j++){
+            dp[i][j] = dfs(i,j);
+            ans = max(ans,dp[i][j]);
+        }
+    }
+    cout<<ans;//출력
+    return 0;
+}
