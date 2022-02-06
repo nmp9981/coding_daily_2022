@@ -1,0 +1,100 @@
+#include <iostream>
+#include <cstring>
+#include <queue>
+using namespace std;
+
+string maps[5];
+bool visit[5][5];//방문여부
+bool selected[25];//선택
+int ans = 0;
+//축이동
+int dx[4] = {-1,1,0,0};
+int dy[4] = {0,0,-1,1};
+
+//입력
+void input(){
+    for(int i=0;i<5;i++){
+        cin>>maps[i];
+    }
+    memset(selected,false,sizeof(selected));
+}
+
+//연결되었는가?
+bool bfs(){
+    queue<pair<int,int>> q;
+    memset(visit,false,sizeof(visit));//초기화
+    //첫자리
+    for(int i=0;i<25;i++){
+        if(selected[i]==true){
+            visit[i/5][i%5] = true;
+            q.push({i/5,i%5});
+            break;
+        }
+    }
+    
+    int c = 1;
+    while(!q.empty()){
+        int x = q.front().first;
+        int y = q.front().second;
+        q.pop();
+        
+        //다음지점
+        for(int i=0;i<4;i++){
+            int nx = x + dx[i];
+            int ny = y + dy[i];
+            //범위내에 들고 미방문이면
+            if(nx<0 || nx>=5 || ny<0 || ny>=5){
+                continue;
+            }
+            //선택한 조합이면
+            if(visit[nx][ny]==false && selected[5*nx+ny]==true){
+                c++;
+                visit[nx][ny] = true;
+                q.push({nx,ny});
+            }
+        }
+    }
+    //연결여부
+    if(c==7){
+        return true;
+    }
+    return false;
+}
+//som파인가?
+bool is_som(){
+    int yeon = 0;
+    for(int i=0;i<25;i++){
+        if(selected[i]==true && maps[i/5][i%5]=='Y'){
+            yeon++;
+        }
+    }
+    if(yeon>=4){
+        return false;
+    }
+    return true;
+}
+//조합
+void dfs(int idx,int cnt){
+    if(cnt==7){
+        if(bfs()){
+            if(is_som()){
+                ans++;
+            }
+        }
+        return;
+    }
+    //다음 숫자
+    for(int i=idx;i<25;i++){
+        if(selected[i]==false){
+            selected[i] = true;
+            dfs(i+1,cnt+1);
+            selected[i] = false;
+        }
+    }
+}
+int main(){
+    input();//입력
+    dfs(0,0);//조합
+    cout<<ans;//출력
+    return 0;
+}
