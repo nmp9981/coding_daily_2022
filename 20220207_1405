@@ -1,0 +1,48 @@
+#include <iostream>
+#include <cstring>
+using namespace std;
+
+double prob[4];
+bool visit[29][29];
+double ans = 0;
+int n;
+//축이동
+int dx[4] = {0,0,1,-1};
+int dy[4] = {1,-1,0,0};
+
+//입력
+void input(){
+    cin>>n;
+    for(int i=0;i<4;i++){
+        cin>>prob[i];
+        prob[i]/=100;
+    }
+    memset(visit,false,sizeof(visit));//초기화
+}
+//로봇이동
+void dfs(int x,int y,int cnt,double p){//위치,횟수,누적확률
+    //이동을 마치면
+    if(cnt==n){
+        ans+=p;
+        return;
+    }
+    //다음지점
+    for(int i=0;i<4;i++){
+        int nx = x + dx[i];
+        int ny = y + dy[i];
+        //미방문이면
+        if(visit[nx][ny]==false){
+            visit[nx][ny] = true;
+            double np = p*prob[i];
+            dfs(nx,ny,cnt+1,np);
+            visit[nx][ny] = false;
+        }
+    }
+}
+int main(){
+    input();//입력
+    visit[14][14] = true;//방문체크
+    dfs(14,14,0,1);//로봇이동
+    printf("%.9f",ans);//출력
+    return 0;
+}
