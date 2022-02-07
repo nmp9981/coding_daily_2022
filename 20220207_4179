@@ -1,0 +1,110 @@
+#include <iostream>
+#include <cstring>
+#include <queue>
+using namespace std;
+
+int r,c;
+const int maxi = 1001;
+string maps[maxi];//지도
+bool visit[maxi][maxi];//방문여부
+//축이동
+int dx[4] = {-1,1,0,0};
+int dy[4] = {0,0,-1,1};
+
+//입력
+void input(){
+    cin>>r>>c;
+    for(int i=0;i<r;i++){
+        cin>>maps[i];
+    }
+    memset(visit,false,sizeof(visit));//초기화
+}
+
+//탐색
+void bfs(){
+    queue<pair<int,int>> jihun;//지훈
+    queue<pair<int,int>> fire;//불
+    //처음 지훈 지점
+    for(int i=0;i<r;i++){
+        for(int j=0;j<c;j++){
+            if(maps[i][j]=='J'){
+                visit[i][j] = true;
+                jihun.push({i,j});
+            }
+        }
+    }
+    //초기 불
+    for(int i=0;i<r;i++){
+        for(int j=0;j<c;j++){
+            if(maps[i][j]=='F'){
+                fire.push({i,j});
+            }
+        }
+    }
+    
+    int day = 0;
+    while(true){
+        //불 이동
+        int fire_size = fire.size();
+        for(int i=0;i<fire_size;i++){
+            int fx = fire.front().first;
+            int fy = fire.front().second;
+            fire.pop();
+            
+            //다음지점
+            for(int k=0;k<4;k++){
+                int nfx = fx + dx[k];
+                int nfy = fy + dy[k];
+                //범위내에 드는가?
+                if(nfx<0 || nfx>=r || nfy<0 || nfy>=c){
+                    continue;
+                }
+                //불과 벽이 아닐경우
+                if(maps[nfx][nfy]!='#' && maps[nfx][nfy]!='F'){
+                    maps[nfx][nfy] = 'F';//불 번짐
+                    fire.push({nfx,nfy});
+                }
+            }
+        }
+        //지훈 이동
+        int cnt = 0;
+        int jihun_size = jihun.size();
+        for(int i=0;i<jihun_size;i++){
+            int jx = jihun.front().first;
+            int jy = jihun.front().second;
+            jihun.pop();
+            
+            //다음에 탈출
+            if(jx==0 || jx==r-1 || jy==0 || jy==c-1){
+                cout<<day+1;
+                return;
+            }
+            //다음지점
+            for(int k=0;k<4;k++){
+                int njx = jx + dx[k];
+                int njy = jy + dy[k];
+                //빈공간이고
+                if(maps[njx][njy]=='.'){
+                    //미방문이면
+                    if(visit[njx][njy]==false){
+                        visit[njx][njy] = true;//방문체크
+                        jihun.push({njx,njy});
+                        cnt++;
+                    }
+                }
+            }
+        }
+        //다음 방문 가능 지점이 없으면
+        if(cnt==0){
+            cout<<"IMPOSSIBLE";   
+            return;//return으로 종료하지 않으면 IMPOSSIBLE이 반복해서 출력될 수 있음
+        }
+        day++;//다음 시간
+    }
+}
+
+int main(){
+    input();//입력
+    bfs();//탐색
+    return 0;
+}
