@@ -1,0 +1,65 @@
+#include <iostream>
+#include <cstring>
+#include <queue>
+using namespace std;
+
+const int maxi = 10000;
+bool visit[maxi];
+string comm[4] = {"D","S","L","R"};
+
+//DSLR
+int cal(int n,int idx){
+    int res;
+    if(idx==0){
+        res = (2*n)%maxi;
+    }else if(idx==1){
+        res = (n+9999)%maxi;
+    }else if(idx==2){
+        res = (n%1000)*10+n/1000;
+    }else if(idx==3){
+        res = n/10+(n%10)*1000;
+    }
+    return res;
+}
+//명령진행
+void bfs(int a,int b){//시작, 도착
+    //첫 지점
+    memset(visit,false,sizeof(visit));
+    visit[a] = true;
+    queue<pair<int,string>> q;
+    q.push({a,""});
+
+    while(!q.empty()){
+        int x = q.front().first;
+        string s = q.front().second;//이전 명령어 저장
+        q.pop();
+        
+        //목표 도착
+        if(x==b){
+            cout<<s<<"\n";
+            return;
+        }
+        //다음지점
+        for(int i=0;i<4;i++){
+            int next = cal(x,i);
+            //미방문이면
+            if(visit[next]==false){
+                visit[next] = true;
+                q.push({next,s+comm[i]});
+            }
+        }
+    }
+}
+
+int main(){
+    int test;
+    cin>>test;
+    cin.tie(0);//빠른 입출력
+    cout.tie(0);
+    while(test--){
+        int a,b;
+        cin>>a>>b;
+        bfs(a,b);
+    }
+    return 0;
+}
