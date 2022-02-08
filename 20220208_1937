@@ -1,0 +1,59 @@
+#include <iostream>
+#include <cstring>
+using namespace std;
+
+int n;
+int ans = 0;
+const int maxi = 501;
+int maps[maxi][maxi];
+int dp[maxi][maxi];//i,j에서 출발했을때의 깊이
+//축이동
+int dx[4] = {-1,1,0,0};
+int dy[4] = {0,0,-1,1};
+
+//입력
+void input(){
+    cin>>n;
+    for(int i=0;i<n;i++){
+        for(int j=0;j<n;j++){
+            cin>>maps[i][j];
+        }
+    }
+    memset(dp,-1,sizeof(dp));//초기화
+}
+
+//깊이 구하기
+int dfs(int x,int y){//위치
+    //이미 방문함
+    if(dp[x][y]!=-1){
+        return dp[x][y];
+    }
+    int cnt = 0;
+    //다음지점
+    for(int i=0;i<4;i++){
+        int nx = x + dx[i];
+        int ny = y + dy[i];
+        //범위내에 드는가?
+        if(nx<0 || nx>=n || ny<0 || ny>=n){
+            continue;
+        }
+        //대나무가 더 많은가?
+        if(maps[nx][ny]>maps[x][y]){
+            cnt = max(dfs(nx,ny),cnt);
+        }
+    }
+    return dp[x][y] = cnt+1;//가장 깊은곳에서부터 거슬러 올라옴
+}
+
+int main(){
+    input();//입력
+    //i,j에서 깊이 구하기
+    for(int i=0;i<n;i++){
+        for(int j=0;j<n;j++){
+            dp[i][j] = dfs(i,j);
+            ans = max(ans,dp[i][j]);//갱신
+        }
+    }
+    cout<<ans;//출력
+    return 0;
+}
