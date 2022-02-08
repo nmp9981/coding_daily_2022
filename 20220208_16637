@@ -1,0 +1,53 @@
+#include <iostream>
+using namespace std;
+
+int n,middle;
+int ans = -2147000000;//답이 음수일수도 있음
+string s;
+//입력
+void input(){
+    cin>>n;
+    cin>>s;
+}
+//계산
+int cal(int x,int y,char op){
+    int middle;
+    if(op=='+'){
+        middle = x+y;
+    }else if(op=='-'){
+        middle = x-y;
+    }else if(op=='*'){
+        middle = x*y;
+    }
+    return middle;
+}
+
+//수식계산
+void dfs(int idx,int res){//인덱스, 누적값
+    //최종 결과
+    if(idx>=n){
+        ans = max(res,ans);
+        return;
+    }
+    //연산자
+    char op;
+    if(idx==0){
+        op = '+';
+    }else{
+        op = s[idx-1];
+    }
+    //괄호를 넣는다.
+    if(idx+2<n){//맨 마지막에는 괄호가 들어갈 수 없음
+        middle = cal(s[idx]-'0',s[idx+2]-'0',s[idx+1]);
+        dfs(idx+4,cal(res,middle,op));//누적값, 괄호내 연산
+    }
+    //괄호를 넣지 않는다.
+    dfs(idx+2,cal(res,s[idx]-'0',op));
+}
+
+int main(){
+    input();//입력
+    dfs(0,0);//수식계산
+    cout<<ans;//출력
+    return 0;
+}
