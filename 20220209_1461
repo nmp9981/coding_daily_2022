@@ -1,0 +1,55 @@
+#include <iostream>
+#include <algorithm>
+#include <vector>
+using namespace std;
+
+int n,m,max_plus,max_minus;
+vector<int> posi;//양수
+vector<int> nega;//음수
+
+//입력
+void input(){
+    cin>>n>>m;
+    for(int i=0;i<n;i++){
+        int x;
+        cin>>x;
+        if(x>0){//양수
+            posi.push_back(x);
+        }else{//음수
+            nega.push_back(abs(x));
+        }
+    }
+    sort(posi.begin(),posi.end());//정렬
+    sort(nega.begin(),nega.end());
+}
+
+//도서관 책 이동
+void library(){
+    int dist = 0;
+    //양수
+    for(int i=posi.size()-1;i>=0;i-=m){
+        dist+=(2*posi[i]);
+    }
+    //음수
+    for(int i=nega.size()-1;i>=0;i-=m){
+        dist+=(2*nega[i]);
+    }
+    //가장 먼 지점은 한번만 방문
+    if(posi.size()==0){
+        max_plus = 0;
+    }else{
+        max_plus = posi[posi.size()-1];
+    }
+    if(nega.size()==0){
+        max_minus = 0;
+    }else{
+        max_minus = nega[nega.size()-1];
+    }
+    dist-= max(max_plus,max_minus);//가장 먼 지점을 빼준다.
+    cout<<dist;
+}
+int main(){
+    input();//입력
+    library();//도서관 
+    return 0;
+}
