@@ -1,0 +1,60 @@
+#include <iostream>
+#include <cstring>
+using namespace std;
+
+int n,middle;
+string s;
+int ans = -2147000000;
+
+//입력
+void input(){
+    cin>>n;
+    cin>>s;
+}
+
+//계산하기
+int cal(int a,int b,char op){
+    switch(op){
+        case '+':
+            a+=b;
+            break;
+        case '-':
+            a-=b;
+            break;
+        case '*':
+            a*=b;
+            break;
+    }
+    return a;
+}
+
+//수식계산
+void dfs(int idx,int res){
+    //식 완성
+    if(idx>n-1){
+        ans = max(res,ans);
+        return;
+    }
+
+    char op;
+    if(idx==0){
+        op = '+';
+    }else{
+        op = s[idx-1];//이전것
+    }
+
+    //괄호O
+    if(idx+2<n){
+        middle = cal(s[idx]-'0',s[idx+2]-'0',s[idx+1]);
+        dfs(idx+4,cal(res,middle,op));
+    }
+    //괄호X
+    dfs(idx+2,cal(res,s[idx]-'0',op));
+}
+
+int main(){
+    input();//입력
+    dfs(0,0);//인덱스, 누적값
+    cout<<ans;
+    return 0;
+}
