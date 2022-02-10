@@ -1,0 +1,76 @@
+#include <iostream>
+#include <cstring>
+#include <queue>
+#include <vector>
+using namespace std;
+
+int n,k;
+const int maxi = 200001;
+bool visit[maxi];//방문여부
+int parent[maxi];//i의 이전노드
+vector<int> ans;//정답
+
+//입력
+void input(){
+    cin>>n>>k;
+    //초기화
+    memset(visit,false,sizeof(visit));
+    for(int i=1;i<=n;i++){
+        parent[i] = i;
+    }
+}
+
+//역추적
+void trace(int y){
+    ans.push_back(y);
+    if(parent[y]==y){
+        return;
+    }
+    trace(parent[y]);
+}
+
+//숨바꼭질
+void bfs(){
+    queue<pair<int,int>> q;
+    q.push({n,0});
+    visit[n] = true;//방문체크
+    
+    while(!q.empty()){
+        int x = q.front().first;
+        int cnt = q.front().second;
+        q.pop();
+        
+        //도착
+        if(x==k){
+            cout<<cnt<<"\n";
+            trace(k);//역추척
+            return;
+        }
+        //다음지점
+        if(x+1<maxi && visit[x+1]==false){
+            parent[x+1] = x;
+            visit[x+1] = true;
+            q.push({x+1,cnt+1});
+        }
+        if(x-1>=0 && visit[x-1]==false){
+            parent[x-1] = x;
+            visit[x-1] = true;
+            q.push({x-1,cnt+1});
+        }
+        if(x*2<maxi && visit[x*2]==false){
+            parent[2*x] = x;
+            visit[x*2] = true;
+            q.push({x*2,cnt+1});
+        }
+    }
+}
+
+int main(){
+    input();//입력
+    bfs();//숨바꼭질
+    //출력
+    for(int i=ans.size()-1;i>=0;i--){
+        cout<<ans[i]<<" ";
+    }
+    return 0;
+}
