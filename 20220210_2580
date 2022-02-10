@@ -1,0 +1,86 @@
+#include <iostream>
+#include <vector>
+using namespace std;
+
+int sudoku[9][9];
+int maxi = 0;//빈칸의 총 개수
+vector<pair<int,int>> blank;//빈칸의 위치
+
+//입력
+void input(){
+    for(int i=0;i<9;i++){
+        for(int j=0;j<9;j++){
+            cin>>sudoku[i][j];
+            //빈칸의 총 개수
+            if(sudoku[i][j]==0){
+                blank.push_back({i,j});
+                maxi++;
+            }
+        }
+    }
+}
+
+//출력
+void output(){
+    for(int i=0;i<9;i++){
+        for(int j=0;j<9;j++){
+            cout<<sudoku[i][j]<<" ";
+        }
+        cout<<"\n";
+    }
+}
+//작은 박스 검사
+bool check_box(int row,int col,int n){
+    int box_x = (row/3)*3;//작은 박스 시작지점
+    int box_y = (col/3)*3;
+    for(int r=0;r<3;r++){
+        for(int c=0;c<3;c++){
+            if(sudoku[box_x+r][box_y+c]==n){
+                return false;
+            }
+        }
+    }
+    return true;
+}
+//행검사
+bool check_row(int row,int n){
+    for(int k=0;k<9;k++){
+        if(sudoku[row][k]==n){
+            return false;
+        }
+    }
+    return true;
+}
+//열검사
+bool check_col(int col,int n){
+    for(int k=0;k<9;k++){
+        if(sudoku[k][col]==n){
+            return false;
+        }
+    }
+    return true;
+}
+//스도쿠 풀기
+void solve(int cnt){
+    //빈칸을 모두 채웠으면
+    if(maxi==cnt){
+        output();//출력
+        exit(0);//답을 1개만 출력
+    }
+    //현재 빈칸 위치
+    int x = blank[cnt].first;
+    int y = blank[cnt].second;
+    for(int j=1;j<=9;j++){//채울 수 있는가?
+        if(check_row(x,j) && check_col(y,j) && check_box(x,y,j)){
+            sudoku[x][y] = j;
+            solve(cnt+1);//다음 칸으로 재귀
+            sudoku[x][y] = 0;//원래대로
+        }
+    }
+}
+
+int main(){
+    input();//입력
+    solve(0);//스도쿠 풀기
+    return 0;
+}
