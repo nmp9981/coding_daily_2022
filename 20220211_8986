@@ -1,0 +1,52 @@
+#include <iostream>
+using namespace std;
+typedef long long ll;
+
+ll n;
+const ll maxi = 100001;
+ll pole[maxi];//전봇대의 위치
+
+//입력
+void input(){
+    cin>>n;
+    for(int i=0;i<n;i++){
+        cin>>pole[i];
+    }
+}
+
+//거리 구하기
+ll dist(ll x){//간격
+    ll sum = 0;
+    for(int i=0;i<n;i++){
+        sum+=abs(i*x-pole[i]);
+    }
+    return sum;
+}
+
+//삼분탐색
+void search(){
+    ll st = 0;
+    ll end = 1e+9;
+    //구간 구하기
+    while(st+3<=end){
+        ll left = (2*st+end)/3;
+        ll right = (st+2*end)/3;
+        if(dist(left)>dist(right)){//왼쪽이 더 클경우
+            st = left;
+        }else{//오른쪽이 더 클경우
+            end = right;
+        }
+    }
+    //결과 구하기
+    ll ans = 1e+18;
+    for(int i=st;i<=end;i++){
+        ans = min(ans,dist(i));
+    }
+    cout<<ans;
+}
+
+int main(){
+    input();//입력
+    search();//삼분탐색
+    return 0;
+}
