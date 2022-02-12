@@ -1,0 +1,117 @@
+#include <iostream>
+#include <queue>
+#include <cstring>
+#include <vector>
+using namespace std;
+
+int w,h;
+const int maxi = 1001;
+bool visit[maxi][maxi];//상근 방문여부
+string maps[maxi];//지도
+//축이동
+int dx[4] = {-1,1,0,0};
+int dy[4] = {0,0,-1,1};
+
+//초기화
+void init(){
+    memset(visit,false,sizeof(visit));
+    for(int i=0;i<h;i++){
+        maps[i]="";
+    }
+}
+
+//입력
+void input(){
+    cin>>w>>h;
+    for(int i=0;i<h;i++){
+        cin>>maps[i];
+    }
+}
+//탐색
+void bfs(){
+    //초기상태
+    queue<pair<int,int>> fire;
+    queue<pair<int,int>> sang;
+    for(int i=0;i<h;i++){
+        for(int j=0;j<w;j++){
+            if(maps[i][j]=='@'){
+                sang.push({i,j});
+                visit[i][j] = false;
+            }else if(maps[i][j]=='*'){
+                fire.push({i,j});
+            }
+        }
+    }
+    
+    int ans = 0;
+    while(true){
+        //불
+        int fire_size = fire.size();
+        for(int i=0;i<fire_size;i++){
+            int x = fire.front().first;
+            int y = fire.front().second;
+            fire.pop();
+            
+            //다음지점
+            for(int k=0;k<4;k++){
+                int nx = x + dx[k];
+                int ny = y + dy[k];
+                //범위내에 드는가?
+                if(nx<0 || nx>=h || ny<0 || ny>=w){
+                    continue;
+                }
+                //벽, 불이 아니면
+                if(maps[nx][ny]!='#' && maps[nx][ny]!='*'){
+                    maps[nx][ny]='*';//불번짐
+                    fire.push({nx,ny});
+                }
+            }
+        }
+        //상근
+        int cnt = 0;//탈출가능 지점
+        int sang_size = sang.size();
+        for(int i=0;i<sang_size;i++){
+            int x = sang.front().first;
+            int y = sang.front().second;
+            sang.pop();
+            
+            //다음지점에서 탈출
+            if(x==0 || x==h-1 || y==0 || y==w-1){
+                cout<<ans+1<<"\n";
+                return;
+            }
+            //다음지점
+            for(int k=0;k<4;k++){
+                int nx = x + dx[k];
+                int ny = y + dy[k];
+                //범위내에 드는가?
+                if(nx<0 || nx>=h || ny<0 || ny>=w){
+                    continue;
+                }
+                //빈공간
+                if(maps[nx][ny]=='.' && visit[nx][ny]==false){
+                    visit[nx][ny] = true;//방문체크
+                    cnt++;
+                    sang.push({nx,ny});
+                }
+            }
+        }
+        //탈출불가능한가?
+        if(cnt==0){
+            cout<<"IMPOSSIBLE"<<"\n";
+            return;
+        }else{
+            ans++;
+        }
+    }
+}
+int main(){
+    int test;
+    cin>>test;
+    while(test--){
+        init();//초기화
+        input();//입력
+        bfs();//탐색
+    }
+    return 0;
+}
