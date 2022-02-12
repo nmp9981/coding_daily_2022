@@ -1,0 +1,56 @@
+#include <iostream>
+#include <algorithm>
+#include <vector>
+using namespace std;
+
+int n,m,x,far_posi,far_nega;
+vector<int> posi;
+vector<int> nega;
+
+//입력
+void input(){
+    cin>>n>>m;
+    for(int i=0;i<n;i++){
+        cin>>x;
+        if(x>0){
+            posi.push_back(x);
+        }else{
+            nega.push_back(abs(x));
+        }
+    }
+    //정렬
+    sort(posi.begin(),posi.end());
+    sort(nega.begin(),nega.end());
+}
+
+//도서관
+void library(){
+    int dist = 0;
+    //양수
+    for(int i=posi.size()-1;i>=0;i-=m){
+        dist+=(2*posi[i]);
+    }
+    //음수
+    for(int i=nega.size()-1;i>=0;i-=m){
+        dist+=(2*nega[i]);
+    }
+    //가장 먼곳은 한번만
+    if(posi.size()==0){
+        far_posi = 0;
+    }else{
+        far_posi = posi[posi.size()-1];
+    }
+    if(nega.size()==0){
+        far_nega = 0;
+    }else{
+        far_nega = nega[nega.size()-1];
+    }
+    int far = max(far_nega,far_posi);
+    dist-=far;
+    cout<<dist;//출력
+}
+int main(){
+    input();//입력
+    library();//도서관
+    return 0;
+}
