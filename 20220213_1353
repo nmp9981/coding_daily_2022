@@ -1,0 +1,36 @@
+#include <iostream>
+#include <cmath>
+using namespace std;
+
+double s,p;
+
+//풀이
+void solve(){
+    double prev = 0;
+    double n = 2;
+    while(true){
+        double mid = pow(s/n,n);
+        //조건 만족
+        if(mid>=p){
+            cout<<n;
+            return;
+        }
+        //이전값보다 작다
+        if(prev>mid){
+            cout<<-1;
+            return;
+        }
+        //갱신
+        prev = mid;
+        n++;
+    }
+}
+int main(){
+    cin>>s>>p;
+    if(s==p){
+        cout<<1;
+    }else{
+        solve();//풀이
+    }
+    return 0;
+}
