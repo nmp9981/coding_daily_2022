@@ -1,0 +1,49 @@
+#include <iostream>
+using namespace std;
+typedef long long ll;
+
+int n;
+const int maxi = 100001;
+ll pole[maxi];
+
+//입력
+void input(){
+    cin>>n;
+    for(int i=0;i<n;i++){
+        cin>>pole[i];
+    }
+}
+
+//이동거리 구하기
+ll dist(ll x){
+    ll sum = 0;
+    for(int i=0;i<n;i++){
+        sum+=abs(i*x-pole[i]);
+    }
+    return sum;
+}
+//탐색
+void search(){
+    ll start = 0;
+    ll end = 1e+9;
+    while(start+3<=end){
+        int mid1 = (2*start+end)/3;
+        int mid2 = (start+2*end)/3;
+        if(dist(mid1)>dist(mid2)){
+            start = mid1;
+        }else{
+            end = mid2;
+        }
+    }
+    //최종 답 구하기
+    ll res = 1e+18;
+    for(int i=start;i<=end;i++){
+        res = min(res,dist(i));
+    }
+    cout<<res;
+}
+int main(){
+    input();//입력
+    search();//탐색
+    return 0;
+}
