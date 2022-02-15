@@ -1,0 +1,37 @@
+#include <iostream>
+#include <cmath>
+using namespace std;
+
+double s,p;
+
+//풀이
+void solve(){
+    double n = 2;
+    double prev = 0;
+    while(1){
+        double res = pow(s/n,n);
+        //p이상이면 즉시 종료하고 출력
+        if(res>=p){
+            cout<<n;
+            return;
+        }
+        //이전값보다 작으면 해가 존재하지 않음
+        if(res<prev){
+            cout<<-1;
+            return;
+        }
+        //갱신
+        n++;
+        prev = res;
+    }
+}
+
+int main(){
+    cin>>s>>p;;
+    if(s==p){
+        cout<<1;
+    }else{
+        solve();//풀이
+    }
+    return 0;
+}
