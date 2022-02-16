@@ -1,0 +1,87 @@
+#include <iostream>
+#include <cstring>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+const int trie_size = 10;//트라이 문자열 종류 개수
+const int maxi = 10001;//문자 길이
+//트라이 구조체
+struct Trie{
+    bool finish;//끝나는 지점인가?
+    Trie* next[trie_size];//trie_size개 문자에 대한 트라이
+    //생성자
+    Trie() : finish(false){
+        memset(next,0,sizeof(next));
+    }
+    //소멸자
+    ~Trie(){
+        for(int i=0;i<trie_size;i++){
+            if(next[i]){
+                delete next[i];
+            }
+        }
+    }
+    //삽입(재귀)
+    void insert(const char* key){
+        if(*key == '\0'){//문자열이 끝나는 지점이면
+            finish = true;
+        }else{
+            int cur = *key-'0';//다음 문자열
+            if(next[cur]==NULL){//다음 노드가 없는가?
+                next[cur] = new Trie();//트리 생성
+            }
+            next[cur] -> insert(key+1);//다음문자 삽입
+        }
+    }
+    //찾기(재귀)
+    bool find(const char* key){
+        if(*key=='\0'){//끝까지 도달
+            return false;
+        }
+        if(finish){//중간에 finish가 있으면 일관성 x
+            return true;
+        }
+        int cur = *key-'0';//다음 문자열
+        return next[cur] -> find(key+1);//다음문자 탐색
+    }
+};
+
+int n,t;
+string s;
+char a[maxi][11];
+
+int main(){
+    //빠른 입출력
+    ios::sync_with_stdio(false);
+    cin.tie(0);cout.tie(0);
+
+    //입력
+    cin>>t;
+    while(t--){
+        Trie* trie = new Trie();//트라이 생성
+        cin>>n;
+        //원소 넣기
+        for(int i=0;i<n;i++){
+            cin>>a[i];
+            trie->insert(a[i]);
+        }
+        //원소 찾기
+        bool flag = true;
+        for(int i=0;i<n;i++){
+            if(trie->find(a[i])){//일관성이 없다
+                flag = false;
+                break;
+            }else{
+                flag = true;
+            }
+        }
+        //출력
+        if(flag==true){
+            cout<<"YES"<<"\n";
+        }else{
+            cout<<"NO"<<"\n";
+        }
+    }
+    return 0;
+}
