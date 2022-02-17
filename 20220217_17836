@@ -1,0 +1,72 @@
+#include <iostream>
+#include <queue>
+#include <cstring>
+using namespace std;
+
+int n,m,t;
+const int maxi = 101;
+int castle[maxi][maxi];//성
+bool visit[maxi][maxi];//방문여부
+//축이동
+int dx[4] = {-1,1,0,0};
+int dy[4] = {0,0,-1,1};
+
+//입력
+void input(){
+    cin>>n>>m>>t;
+    for(int i=1;i<=n;i++){
+        for(int j=1;j<=m;j++){
+            cin>>castle[i][j];
+        }
+    }
+    memset(visit,false,sizeof(visit));//초기화
+}
+
+//탐색
+int bfs(){
+    queue<pair<pair<int,int>,int>> q;
+    q.push({{1,1},0});
+    visit[1][1] = true;//방문 체크
+    int sward = 1e+9;
+    
+    while(!q.empty()){
+        int x = q.front().first.first;
+        int y = q.front().first.second;
+        int cnt = q.front().second;
+        q.pop();
+        
+        //도착
+        if(x==n && y==m){
+            return min(sward,cnt);
+        }
+        //명검발견
+        if(castle[x][y]==2){
+            sward = cnt+n-x+m-y;
+        }
+        //다음 지점
+        for(int i=0;i<4;i++){
+            int nx = x + dx[i];
+            int ny = y + dy[i];
+            //범위내에 드는가?
+            if(nx<1 || nx>n || ny<1 || ny>m){
+                continue;
+            }
+            //벽이 아니고 미방문
+            if(visit[nx][ny]==false && castle[nx][ny]!=1){
+                visit[nx][ny] = true;//방문체크
+                q.push({{nx,ny},cnt+1});
+            }
+        }
+    }
+    return sward;
+}
+int main(){
+    input();//입력
+    int ans = bfs();
+    if(ans>t){
+        cout<<"Fail";
+    }else{
+        cout<<ans;
+    }
+    return 0;
+}
