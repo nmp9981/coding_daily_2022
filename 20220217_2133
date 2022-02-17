@@ -1,0 +1,26 @@
+#include <iostream>
+using namespace std;
+
+int n;
+const int maxi = 31;
+int dp[maxi];
+
+//타일 점화식
+void tile(){
+    dp[0] = 1;
+    dp[2] = 3;
+    for(int i=4;i<maxi;i+=2){
+        dp[i] += 3*dp[i-2];
+        for(int j=i-4;j>=0;j-=2){
+            dp[i] += 2*dp[j];
+        }
+    }
+}
+
+int main(){
+    tile();
+    cin>>n;
+    if(n%2==0) cout<<dp[n];
+    else cout<<0;//홀수인 경우에는 채울 수 없다
+    return 0;
+}
