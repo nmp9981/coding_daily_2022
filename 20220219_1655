@@ -1,0 +1,39 @@
+#include <iostream>
+#include <queue>
+#include <algorithm>
+using namespace std;
+
+int n,x;
+priority_queue<int> max_pq;//최대힙
+priority_queue<int,vector<int>,greater<int>> min_pq;//최소힙
+
+int main(){
+    cin.tie(0);//빠른 입력
+    cout.tie(0);
+    
+    cin>>n;
+    for(int i=0;i<n;i++){
+        //원소 넣기
+        cin>>x;
+        if(max_pq.size()==min_pq.size()){
+            max_pq.push(x);//개수는 최대힙이 더 많다.
+        }else{
+            min_pq.push(x);
+        }
+        //swap
+        if(min_pq.empty()){
+            cout<<max_pq.top()<<"\n";
+            continue;
+        }
+        if(max_pq.top()>min_pq.top()){
+            int num = max_pq.top();
+            max_pq.pop();
+            max_pq.push(min_pq.top());
+            min_pq.pop();
+            min_pq.push(num);
+        }
+        //중앙값 출력
+        cout<<max_pq.top()<<"\n";
+    }
+    return 0;
+}
