@@ -1,0 +1,79 @@
+#include <iostream>
+#include <queue>
+#include <cstring>
+using namespace std;
+
+int m,n;
+const int maxi = 1001;
+int box[maxi][maxi];//박스
+int visit[maxi][maxi];//i,j는 며칠째에 도달하는가?
+queue<pair<int,int>> q;//토마토의 위치
+//축이동
+int dx[4] = {-1,1,0,0};
+int dy[4] = {0,0,-1,1};
+
+//입력
+void input(){
+    cin>>m>>n;
+    memset(visit,-1,sizeof(visit));//초기화
+    for(int i=0;i<n;i++){
+        for(int j=0;j<m;j++){
+            cin>>box[i][j];
+            //처음 익은 토마토들을 큐에 넣기
+            if(box[i][j]==1){
+                visit[i][j] = 0;
+                q.push({i,j});
+            }
+        }
+    }
+}
+
+//토마토
+void tomato(){
+    while(!q.empty()){
+        int x = q.front().first;
+        int y = q.front().second;
+        q.pop();
+            
+        //다음지점
+        for(int k=0;k<4;k++){
+            int nx = x + dx[k];
+            int ny = y + dy[k];
+            //범위내에 드는가?
+            if(nx<0 || nx>=n || ny<0 ||ny>=m){
+                continue;
+            }
+            //안익은 토마토이고 미방문인가?
+            if(box[nx][ny]==0 && visit[nx][ny]==-1){
+                visit[nx][ny] = visit[x][y]+1;//토마토가 익음
+                q.push({nx,ny});
+            }
+        }
+    }
+}
+
+//확인
+void chk(){
+    int day = 0;
+    for(int i=0;i<n;i++){
+        for(int j=0;j<m;j++){
+            day = max(day,visit[i][j]);
+            //안익은 토마토가 남았으면
+            if(box[i][j]==0 && visit[i][j]==-1){
+                cout<<-1;
+                return;
+            }
+        }
+    }
+    cout<<day;
+}
+
+int main(){
+    cin.tie(0);//빠른 입력
+    cout.tie(0);
+    
+    input();//입력
+    tomato();//토마토
+    chk();//확인
+    return 0;
+}
