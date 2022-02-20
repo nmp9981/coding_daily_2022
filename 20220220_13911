@@ -1,0 +1,107 @@
+#include <iostream>
+#include <queue>
+#include <cstring>
+#include <algorithm>
+using namespace std;
+
+int V,E,M,N,x,y;
+const int inf = 1e+9;
+const int maxi = 10011;
+int prev_dist[maxi];
+int dist[maxi];
+bool mac[maxi];//맥도날드
+bool star[maxi];//스타벅스
+vector<pair<int,int>> graph[maxi];//그래프
+
+//다익스트라
+void dijk(int start){
+    //초기화
+    for(int i=1;i<=V;i++){
+        dist[i] = inf;
+    }
+    priority_queue<pair<int,int>> pq;//우선순위 큐
+    pq.push({0,start});//거리, 시작노드
+    dist[start] = 0;
+    
+    while(!pq.empty()){
+        int x = -pq.top().first;
+        int node = pq.top().second;
+        pq.pop();
+        
+        //이전보다 더 큰값이 오면
+        if(x>dist[node]){
+            continue;
+        }
+        //다음지점
+        for(int i=0;i<graph[node].size();i++){
+            int next_node = graph[node][i].first;
+            int nx = graph[node][i].second+x;
+            //더 작은 거리가 나오는가?
+            if(nx<dist[next_node]){
+                dist[next_node] = nx;
+                pq.push({-nx,next_node});
+            }
+        }
+    }
+}
+//입력
+void input(){
+    //초기화
+    memset(mac,false,sizeof(mac));
+    memset(star,false,sizeof(star));
+    //그래프 입력
+    cin>>V>>E;
+    for(int i=0;i<E;i++){
+        int u,v,w;
+        cin>>u>>v>>w;
+        graph[u].push_back({v,w});//양방향 그래프
+        graph[v].push_back({u,w});
+    }
+    //맥도날드 더미노드 연결
+    cin>>M>>x;
+    for(int i=0;i<M;i++){
+        int u;
+        cin>>u;
+        mac[u] = true;
+        graph[0].push_back({u,0});
+    }
+    dijk(0);
+    //거리갱신
+    for(int i=1;i<=V;i++){
+        prev_dist[i] = dist[i];
+    }
+    //스타벅스 더미노드 연결
+    cin>>N>>y;
+    for(int i=0;i<N;i++){
+        int u;
+        cin>>u;
+        star[u] = true;
+        graph[V+1].push_back({u,0});
+    }
+    dijk(V+1);
+}
+
+int main(){
+    ios_base::sync_with_stdio(0);//빠른 입력
+    cin.tie(0);
+    
+    input();//입력
+    //최단거리 구하기
+    int res = 2*inf;
+    for(int i=1;i<=V;i++){
+        if(mac[i]==true || star[i]==true){
+            continue;
+        }
+        //맥세권과 스세권
+        if(prev_dist[i]<=x && dist[i]<=y){
+            res = min(res,prev_dist[i]+dist[i]);
+        }
+    }
+    //출력
+    if(res>=2*inf){
+        cout<<-1;
+    }else{
+        cout<<res;
+    }
+    return 0;
+}
