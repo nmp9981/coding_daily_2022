@@ -1,0 +1,23 @@
+#include <iostream>
+#include <map>
+using namespace std;
+typedef long long ll; 
+
+ll n,p,q;
+map<ll,ll> M;
+
+//수열 구하기
+ll A(ll n){
+    //맵에 이미 원소가 존재하면
+    if(M.count(n)!=0){
+        return M[n];
+    }
+    return M[n] = A(n/p)+A(n/q);
+}
+
+int main(){
+    cin>>n>>p>>q;//입력
+    M[0] = 1;
+    cout<<A(n);//수열 구하기
+    return 0;
+}
