@@ -1,0 +1,63 @@
+#include <iostream>
+#include <cstring>
+#include <algorithm>
+using namespace std;
+
+int l,c;
+char vowel[5] = {'a','e','i','o','u'};
+char alpha[15];//입력 알파벳
+bool visit[15];//방문체크
+ 
+//입력
+void input(){
+    cin>>l>>c;
+    for(int i=0;i<c;i++){
+        cin>>alpha[i];
+    }
+    sort(alpha,alpha+c);//정렬
+    memset(visit,false,sizeof(visit));//초기화
+}
+
+//자,모음 확인
+bool chk(string s){
+    int cnt = 0;
+    for(int i=0;i<s.size();i++){
+        for(int j=0;j<5;j++){
+            if(s[i]==vowel[j]){//모음이 있다면
+                cnt++;
+            }
+        }
+    }
+    //자, 모음 개수
+    if(cnt>=1 && l-cnt>=2){
+        return true;
+    }
+    return false;
+}
+
+//조합구하기
+void dfs(int idx,string s){
+    if(s.size()==l){
+        //자,모음확인
+        if(chk(s)){
+            cout<<s<<"\n";
+        }
+        return;
+    }
+
+  //다음문자
+    for(int i=idx;i<c;i++){
+        if(visit[i]) continue;
+        visit[i] = true;
+        string next = s+alpha[i];
+        dfs(i,next);
+        visit[i] = false;
+    }
+}
+
+int main(){
+    cout.tie(0);//빠른 출력
+    input();//입력
+    dfs(0,"");//조합구하기
+    return 0;
+}
