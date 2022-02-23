@@ -1,0 +1,23 @@
+#include <iostream>
+#include <map>
+using namespace std;
+typedef long long ll;
+
+ll n,p,q;
+map<ll,ll> M;
+
+//점화식
+ll dfs(ll n){
+    if(M.count(n)!=0){
+        return M[n];
+    }
+    M[n] = dfs(n/p)+dfs(n/q);
+    return M[n];
+}
+
+int main(){
+    cin>>n>>p>>q;
+    M[0] = 1;
+    cout<<dfs(n);
+    return 0;
+}
