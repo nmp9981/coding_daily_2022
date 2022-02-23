@@ -1,0 +1,90 @@
+#include <iostream>
+#include <cstring>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+const int trie_size = 26;//트라이 문자열 종류 개수
+const int maxi = 100001;//문자 길이
+bool init;//처음 버튼
+int n,cnt,sum;
+char a[maxi][81];//단어의 최대길이가 80
+
+//트라이 구조체
+struct Trie{
+    bool finish;//끝나는 지점인가?
+    int branch = 0;//자식의 개수
+    Trie* next[trie_size];//trie_size개에 대한 문자 트라이
+    //생성자
+    Trie(){
+        memset(next,0,sizeof(next));
+        finish = false;
+        branch = 0;
+    }
+    //소멸자
+    ~Trie(){
+        for(int i=0;i<trie_size;i++){
+            if(next[i]){
+                delete next[i];
+            }
+        }
+    }
+    //삽입
+    void insert(const char* key){
+        if(*key == '\0'){//문자열이 끝나는 지점이면
+            finish = true;
+        }else{
+            int cur = *key - 'a';//다음 문자열
+            if(next[cur]==NULL){
+                branch++;//가지개수 증가
+                next[cur] = new Trie();//트리 생성
+            }
+            next[cur]->insert(key+1);//다음문자 삽입
+        }
+    }
+    //찾기
+    void find(const char* key){
+        if(*key=='\0'){//끝까지 도달
+            return;
+        }
+        if(init){//첫버튼
+            cnt++;
+            init = false;
+        }else{
+            if(branch>=2){//자식이 2개 이상이면
+                cnt++;
+            }else if(finish){//finish지점 도달
+                cnt++;
+            }
+        }
+        int cur = *key-'a';//다음 문자열
+        next[cur] -> find(key+1);//다음문자 탐색
+    }
+};
+
+int main(){
+    //빠른 입출력
+    ios::sync_with_stdio(false);
+    cin.tie(0);cout.tie(0);
+    
+    while(cin>>n){
+        Trie* trie = new Trie();//트라이 객체 생성
+        sum = 0;
+        //원소 넣기
+        for(int i=0;i<n;i++){
+            cin>>a[i];
+            trie->insert(a[i]);
+        }
+        //원소 찾기
+        for(int i=0;i<n;i++){
+            cnt = 0;
+            init = true;
+            trie->find(a[i]);
+            sum+=cnt;
+        }
+        //출력
+        printf("%.2f\n",(double)sum/n);
+        delete trie;//객체 초기화
+    }
+    return 0;
+}
