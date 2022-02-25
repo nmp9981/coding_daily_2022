@@ -1,0 +1,131 @@
+#include <iostream>
+#include <queue>
+#include <cstring>
+using namespace std;
+
+int n,m;
+int ans = 0;
+const int maxi = 301;
+int ice[maxi][maxi];//빙산
+int melt_ice[maxi][maxi];//녹는양
+bool visit[maxi][maxi];//방문체크
+//축이동
+int dx[4] = {-1,1,0,0};
+int dy[4] = {0,0,-1,1};
+
+//입력
+void input(){
+    cin>>n>>m;
+    for(int i=0;i<n;i++){
+        for(int j=0;j<m;j++){
+            cin>>ice[i][j];
+        }
+    }
+}
+//초기화
+void init(){
+    memset(melt_ice,0,sizeof(melt_ice));
+    memset(visit,false,sizeof(visit));
+}
+//녹이기
+void melt(){
+    //녹는 양 구하기
+    for(int i=0;i<n;i++){
+        for(int j=0;j<m;j++){
+            //육지라면
+            if(ice[i][j]>0){
+                int sea = 0;//바닷물 칸수
+                for(int k=0;k<4;k++){
+                    int nx = i + dx[k];
+                    int ny = j + dy[k];
+                    if(ice[nx][ny]==0){
+                        sea++;
+                    }
+                }
+                melt_ice[i][j] += sea;//녹는양 저장
+            }
+        }
+    }
+    //녹이기
+    for(int i=0;i<n;i++){
+        for(int j=0;j<m;j++){
+            ice[i][j]-=melt_ice[i][j];
+            if(ice[i][j]<0) ice[i][j] = 0;//0미만 보정
+        }
+    }
+}
+//구역체크
+bool area_chk(){
+    //첫 육지지점 구하기
+    queue<pair<int,int>> q;
+    bool flag_first = true;//첫번째 지점인가?
+    for(int i=0;i<n;i++){
+        for(int j=0;j<m;j++){
+            if(ice[i][j]>0 && flag_first==true){
+                visit[i][j] = true;
+                q.push({i,j});
+                flag_first = false;
+                break;
+            }
+        }
+    }
+    while(!q.empty()){
+        int x = q.front().first;
+        int y = q.front().second;
+        q.pop();
+        
+        //다음지점
+        for(int k=0;k<4;k++){
+            int nx = x + dx[k];
+            int ny = y + dy[k];
+            //범위내에 드는가?
+            if(nx<0 || nx>=n || ny<0 || ny>=m) continue;
+            //미방문이고 육지인가?
+            if(visit[nx][ny]==false && ice[nx][ny]>0){
+                visit[nx][ny] = true;
+                q.push({nx,ny});
+            }
+        }
+    }
+    //한 영역으로 끝나는가?
+    for(int i=0;i<n;i++){
+        for(int j=0;j<m;j++){
+            //미방문인데 육지가 있는가?
+            if(visit[i][j]==false && ice[i][j]>0){
+                return false;//2개로 나눠짐
+            }
+        }
+    }
+    return true;
+}
+//다 녹았는가?
+bool finish(){
+    bool finish_flag = true;
+    for(int i=0;i<n;i++){
+        for(int j=0;j<m;j++){
+            if(ice[i][j]>0){
+                finish_flag = false;//다 녹지 않았음
+            }
+        }
+    }
+    return finish_flag;
+}
+
+int main(){
+    input();//입력
+    while(1){
+        init();//초기화
+        //구역체크
+        if(area_chk()==false){
+            cout<<ans;
+            break;
+        }else ans++;
+        melt();//녹이기
+        //다 녹았는가?
+        if(finish()==true){
+            cout<<0;
+            break;
+        }
+    }
+    return 0;
+}
