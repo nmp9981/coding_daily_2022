@@ -1,0 +1,21 @@
+#include <iostream>
+#include <map>
+using namespace std;
+typedef long long ll;
+
+ll n,p,q;
+map<ll,ll> M;
+
+ll A(ll x){
+    if(M.count(x)!=0){//이미 값이 있는가?
+        return M[x];
+    }
+    return M[x] = A(x/p)+A(x/q);
+}
+
+int main(){
+    cin>>n>>p>>q;
+    M[0] = 1;
+    cout<<A(n);
+    return 0;
+}
