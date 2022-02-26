@@ -1,0 +1,122 @@
+#include <iostream>
+#include <queue>
+#include <vector>
+#include <cstring>
+using namespace std;
+
+int n,cnt;
+const int maxi = 101;
+string picture[maxi];//그림
+bool visit[maxi][maxi];//방문체크
+//축이동
+int dx[4] = {-1,1,0,0};
+int dy[4] = {0,0,-1,1};
+
+//입력
+void input(){
+    cin>>n;
+    for(int i=0;i<n;i++){
+        cin>>picture[i];
+    }
+}
+//초기화
+void init(){
+    memset(visit,false,sizeof(visit));
+    cnt = 0;
+}
+//구역탐색
+void bfs(char color,int st_x,int st_y){
+    queue<pair<int,int>> q;
+    q.push({st_x,st_y});
+    visit[st_x][st_y] = true;
+    
+    while(!q.empty()){
+        int x = q.front().first;
+        int y = q.front().second;
+        q.pop();
+        
+        //다음지점
+        for(int k=0;k<4;k++){
+            int nx = x + dx[k];
+            int ny = y + dy[k];
+            //범위내에 드는가?
+            if(nx<0 || nx>=n || ny<0 || ny>=n){
+                continue;
+            }
+            //색상이 맞고 미방문
+            if(visit[nx][ny]==false && picture[nx][ny]==color){
+                visit[nx][ny] = true;
+                q.push({nx,ny});
+            }
+        }
+    }
+}
+//구역탐색(적록색약)
+void bfs2(bool flag,int st_x,int st_y){
+    queue<pair<int,int>> q;
+    q.push({st_x,st_y});
+    visit[st_x][st_y] = true;
+    
+    while(!q.empty()){
+        int x = q.front().first;
+        int y = q.front().second;
+        q.pop();
+        
+        //다음지점
+        for(int k=0;k<4;k++){
+            int nx = x + dx[k];
+            int ny = y + dy[k];
+            //범위내에 드는가?
+            if(nx<0 || nx>=n || ny<0 || ny>=n){
+                continue;
+            }
+            //색상이 맞고 미방문
+            if(visit[nx][ny]==false){
+                if(flag==true && picture[nx][ny]=='B'){
+                    visit[nx][ny] = true;
+                    q.push({nx,ny});
+                }else if(flag==false && picture[nx][ny]!='B'){
+                    visit[nx][ny] = true;
+                    q.push({nx,ny});
+                }
+            }
+        }
+    }
+}
+
+//색약이 아닌 경우
+void not_red_green(){
+    for(int i=0;i<n;i++){
+        for(int j=0;j<n;j++){
+            if(visit[i][j]==false){
+                bfs(picture[i][j],i,j);
+                cnt++;
+            }
+        }
+    }
+    cout<<cnt<<" ";
+}
+//색약
+void red_green(){
+    bool flag;
+    for(int i=0;i<n;i++){
+        for(int j=0;j<n;j++){
+            if(visit[i][j]==false){
+                //파란색인가?
+                if(picture[i][j]=='B') flag = true;
+                else flag = false;
+                bfs2(flag,i,j);
+                cnt++;
+            }
+        }
+    }
+    cout<<cnt;
+}
+
+int main(){
+    input();//입력
+    not_red_green();//색약이 아닌 경우
+    init();//초기화
+    red_green();//색약
+    return 0;
+}
