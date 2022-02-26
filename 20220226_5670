@@ -1,0 +1,82 @@
+#include <iostream>
+#include <cstring>
+#include <algorithm>
+#include <vector>
+using namespace std;
+
+const int trie_size = 26;
+const int maxi = 100001;
+bool init;//처음 버튼
+int n,cnt,sum;
+char a[maxi][81];//단어의 최대길이가 80
+
+//트라이 구조체
+struct Trie{
+    bool finish;
+    int branch = 0;//가지의 개수
+    Trie* next[trie_size];//문자 트라이
+    //생성자(초기화)
+    Trie(){
+        memset(next,0,sizeof(next));
+        finish = false;
+        branch = 0;
+    }
+    //소멸자
+    ~Trie(){
+        for(int i=0;i<trie_size;i++){
+            if(next[i]) delete next[i];
+        }
+    }
+    //삽입
+    void insert(const char* key){
+        if(*key=='\0') finish = true;//문자열이 끝남
+        else{
+            int cur = *key-'a';//다음 문자열
+            if(next[cur]==NULL){
+                branch++;
+                next[cur] = new Trie();//트라이생성
+            }
+            next[cur]->insert(key+1);//다음문자 삽입
+        }
+    }
+    //찾기
+    void find(const char *key){
+        if(*key=='\0') return;//끝가지 도달
+        if(init){//첫버튼
+            init = false;
+            cnt++;
+        }else{
+            if(branch>=2) cnt++;//자식이 2개 이상
+            else if(finish) cnt++;//finish 지점
+        }
+        int cur = *key-'a';//다음 문자열
+        next[cur]->find(key+1);//다음문자 탐색
+    }
+};
+
+int main(){
+    //빠른 입출력
+    ios::sync_with_stdio(false);
+    cin.tie(0);cout.tie(0);
+    
+    while(cin>>n){
+        Trie* trie = new Trie();//트라이 객체
+        sum = 0;
+        //원소 넣기
+        for(int i=0;i<n;i++){
+            cin>>a[i];
+            trie->insert(a[i]);
+        }
+        //원소 찾기
+        for(int i=0;i<n;i++){
+            cnt = 0;
+            init = true;
+            trie->find(a[i]);
+            sum+=cnt;
+        }
+        //출력
+        printf("%.2f\n",(double)sum/n);
+        delete trie;//객체 삭제
+    }
+    return 0;
+}
