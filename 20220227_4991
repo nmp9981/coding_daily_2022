@@ -1,0 +1,125 @@
+#include <iostream>
+#include <cstring>
+#include <vector>
+#include <queue>
+#include <algorithm>
+using namespace std;
+
+int w,h,t,res;
+const int maxi = 20;
+const int inf = 1e+8;
+string room[maxi];//방
+vector<pair<int,int>> dust;//먼지 모음
+bool visit[maxi][maxi];//방문여부
+int dist[maxi][maxi];//시작점으로부터의 거리
+int dp[maxi][maxi];//i->j 최단거리
+bool selected[maxi];//조합선택
+//축이동
+int dx[4] = {-1,1,0,0};
+int dy[4] = {0,0,-1,1};
+
+//초기화
+void init(){
+    res = inf;
+    for(int i=0;i<h;i++) room[i] = "";
+    dust.clear();
+    memset(dp,0,sizeof(dp));
+    memset(selected,false,sizeof(selected));
+}
+//입력
+void input(){
+    init();//초기화
+    for(int i=0;i<h;i++){
+        cin>>room[i];
+    }
+    //시작점 넣기
+    for(int i=0;i<h;i++){
+        for(int j=0;j<w;j++){
+            if(room[i][j]=='o'){
+                dust.push_back({i,j});
+            }
+        }
+    }
+    //먼지
+    for(int i=0;i<h;i++){
+        for(int j=0;j<w;j++){
+            if(room[i][j]=='*'){
+                dust.push_back({i,j});
+            }
+        }
+    }
+}
+
+//bfs탐색
+void bfs(int st_x,int st_y){
+    memset(visit,false,sizeof(visit));
+    memset(dist,-1,sizeof(dist));
+    queue<pair<int,int>> q;
+    q.push({st_x,st_y});
+    visit[st_x][st_y] = true;
+    dist[st_x][st_y] = 0;//시작점에서 시작점까지
+    
+    while(!q.empty()){
+        int x = q.front().first;
+        int y = q.front().second;
+        q.pop();
+        
+        //다음지점
+        for(int k=0;k<4;k++){
+            int nx = x + dx[k];
+            int ny = y + dy[k];
+            //범위내에 드는가?
+            if(nx<0 || nx>=h || ny<0 || ny>=w) continue;
+            
+            //가구가 아니고 미방문
+            if(room[nx][ny]!='x' && visit[nx][ny]==false){
+                visit[nx][ny] = true;
+                q.push({nx,ny});
+                dist[nx][ny] = dist[x][y]+1;
+            }
+        }
+    }
+}
+//조합구하기
+void dfs(int st,int cnt,int sum){
+    if(cnt==dust.size()-1){//먼지를 모두 제거
+        res = min(res,sum);//갱신
+        return;
+    }
+    for(int i=1;i<dust.size();i++){//다음 조합
+        if(selected[i]==true) continue;
+        selected[i] = true;
+        int next = sum + dp[st][i];
+        dfs(i,cnt+1,next);
+        selected[i] = false;
+    }
+}
+//로봇탐색
+void robot(){
+    //시작지점 탐색
+    for(int i=0;i<dust.size();i++){
+        int st_x = dust[i].first;
+        int st_y = dust[i].second;
+        bfs(st_x,st_y);
+        //i~j까지 최단거리 탐색
+        for(int j=0;j<dust.size();j++){
+            dp[i][j] = dist[dust[j].first][dust[j].second];
+            //도달불가
+            if(dp[i][j]==-1){
+                cout<<-1<<"\n";
+                return;
+            }
+        }
+    }
+    dfs(0,0,0);//조합구하기
+    cout<<res<<"\n";
+}
+int main(){
+    while(1){
+        cin>>w>>h;
+        if(w==0 && h==0) break;
+        input();//입력
+        robot();//로봇탐색
+    }
+    return 0;
+}
