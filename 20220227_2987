@@ -1,0 +1,60 @@
+#include <iostream>
+#include <queue>
+using namespace std;
+
+//점 구조체
+struct point{
+    int x,y;
+};
+
+point a,b,c,pa,pb,pc,p;
+int n,cnt;
+
+//입력
+void input(){
+    //삼각형의 좌표
+    cin>>a.x>>a.y;
+    cin>>b.x>>b.y;
+    cin>>c.x>>c.y;
+}
+//삼각형의 넓이
+void area_tri(){
+    int S = abs(a.x*(b.y-c.y)+b.x*(c.y-a.y)+c.x*(a.y-b.y));
+    double tri_S = (double)S/2;
+    printf("%.1f\n",tri_S);
+}
+//외적값 구하기
+int cross(point p,point q){
+    return p.x*q.y-q.x*p.y;
+}
+
+//안에 있는가?
+bool is_in(point p){
+    //세 외적이 모두 같은 부호
+    pa.x = p.x-a.x;pa.y = p.y-a.y;
+    pb.x = p.x-b.x;pb.y = p.y-b.y;
+    pc.x = p.x-c.x;pc.y = p.y-c.y;
+    if(cross(pa,pc)>=0 && cross(pc,pb)>=0 && cross(pb,pa)>=0){
+        return true;
+    }
+    if(cross(pa,pc)<=0 && cross(pc,pb)<=0 && cross(pb,pa)<=0){
+        return true;
+    }
+    return false;
+}
+
+int main(){
+    //ios_base::sync_with_stdio(0);//빠른 입력
+    cin.tie(0);
+    
+    input();//입력
+    area_tri();//삼각형의 넓이
+    cin>>n;
+    while(n--){
+        cin>>p.x>>p.y;
+        //점p가 삼각형 내부에 있다면 개수 증가
+        if(is_in(p)==true) cnt++;
+    }
+    cout<<cnt;
+    return 0;
+}
