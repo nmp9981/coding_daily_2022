@@ -1,0 +1,49 @@
+#include <iostream>
+#include <queue>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+int n,l,p;
+vector<pair<int,int>> gas;
+//입력
+void input(){
+    cin>>n;
+    for(int i=0;i<n;i++){
+        int a,b;
+        cin>>a>>b;
+        gas.push_back({a,b});
+    }
+    cin>>l>>p;//마을, 초기 연료
+    sort(gas.begin(),gas.end());//거리 기준으로 정렬
+}
+
+//트럭 이동
+void truck(){
+    int cnt = 0;
+    int idx = 0;
+    priority_queue<int> pq;
+    
+    while(p<l){
+        //거리 p내에 있는 주유소의 연료양 넣기
+        while(idx<n && gas[idx].first<=p){
+            pq.push({gas[idx].second});
+            idx++;
+        }
+        //도달불가
+        if(pq.empty()){
+            cout<<-1;
+            return;
+        }
+        //갱신
+        p+=pq.top();
+        pq.pop();
+        cnt++;
+    }
+    cout<<cnt;
+}
+int main(){
+    input();//입력
+    truck();//트럭 이동
+    return 0;
+}
