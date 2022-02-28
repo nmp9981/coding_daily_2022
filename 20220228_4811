@@ -1,0 +1,35 @@
+#include <iostream>
+using namespace std;
+typedef long long ll;
+
+int n;
+const int maxi = 31;
+ll dp[maxi][maxi];//정상 i, 반쪽 j개일때의 경우의 수
+
+//초기화
+void init(){
+    dp[1][0] = 1;//알약 1개
+    for(int i=0;i<maxi;i++){//모두 반쪽
+        dp[0][i] = 1;
+    }
+}
+//알약
+ll fill(int x,int y){
+    //이미 값이 있다면
+    if(dp[x][y]!=0) return dp[x][y];
+    //범위내에 드는가?
+    if(x<0 || y<0) return 0;
+    //점화식
+    return dp[x][y] = fill(x-1,y+1)+fill(x,y-1);
+}
+
+int main(){
+    init();//초기화
+    fill(29,1);
+    while(1){
+        cin>>n;
+        if(n==0) break;
+        cout<<dp[n-1][1]<<"\n";
+    }
+    return 0;
+}
