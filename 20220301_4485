@@ -1,0 +1,76 @@
+#include <iostream>
+#include <cstring>
+#include <queue>
+using namespace std;
+
+int n;
+const int maxi = 126;
+const int inf = 1e+7;
+int cave[maxi][maxi];
+int dp[maxi][maxi];
+bool visit[maxi][maxi];
+//축이동
+int dx[4] = {-1,1,0,0};
+int dy[4] = {0,0,-1,1};
+
+//초기화
+void init(){
+    memset(cave,0,sizeof(cave));
+    memset(visit,false,sizeof(visit));
+    for(int i=0;i<n;i++){
+        for(int j=0;j<n;j++){
+            dp[i][j] = inf;
+        }
+    }
+}
+//입력
+void input(){
+    for(int i=0;i<n;i++){
+        for(int j=0;j<n;j++){
+            cin>>cave[i][j];
+        }
+    }
+}
+//탐험
+void bfs(int st_x,int st_y){
+    queue<pair<int,int>> q;
+    q.push({st_x,st_y});
+    visit[st_x][st_y] = true;//방문체크
+    dp[st_x][st_y] = cave[st_x][st_y];//첫 지점
+    
+    while(!q.empty()){
+        int x = q.front().first;
+        int y = q.front().second;
+        q.pop();
+        
+        //다음지점
+        for(int i=0;i<4;i++){
+            int nx = x + dx[i];
+            int ny = y + dy[i];
+            //범위내에 드는가?
+            if(nx<0 || ny<0 || nx>=n || ny>=n) continue;
+            //미방문이면
+            if(visit[nx][ny]==false){
+                //더 작은숫자가 오면
+                if(dp[nx][ny]>dp[x][y] + cave[nx][ny]){
+                    dp[nx][ny] = dp[x][y] + cave[nx][ny];
+                    q.push({nx,ny});
+                }
+            }
+        }
+    }
+}
+int main(){
+    int no = 1;
+    while(1){
+        cin>>n;
+        if(n==0) break;//종료
+        
+        init();//초기화
+        input();//입력
+        bfs(0,0);//탐험
+        cout<<"Problem "<<no<<": "<<dp[n-1][n-1]<<"\n";
+        no++;
+    }
+    return 0;
+}
