@@ -1,0 +1,119 @@
+#include <iostream>
+#include <algorithm>
+#include <cstring>
+#include <vector>
+using namespace std;
+
+int n,m,year;
+const int maxi = 11;
+int A[maxi][maxi];//추가 양분
+int food[maxi][maxi];//양분
+vector<int> tree[maxi][maxi];//나무
+int death[maxi][maxi];//죽은나무
+//8방 탐색
+int dx[8] = {0,0,-1,1,-1,-1,1,1};
+int dy[8] = {-1,1,0,0,-1,1,-1,1};
+
+//입력
+void input(){
+    cin>>n>>m>>year;
+    for(int i=1;i<=n;i++){
+        for(int j=1;j<=n;j++){
+            cin>>A[i][j];
+            food[i][j] = 5;//기본 양분
+        }
+    }
+    for(int i=0;i<m;i++){
+        int a,b,age;
+        cin>>a>>b>>age;
+        tree[a][b].push_back(age);
+    }
+}
+
+//봄
+void spring(){
+    //양분섭취
+    for(int i=1;i<=n;i++){
+        for(int j=1;j<=n;j++){
+            //어린 나무부터
+            sort(tree[i][j].begin(),tree[i][j].end());
+            for(int k=0;k<tree[i][j].size();k++){
+                //양분 섭취 가능
+                if(tree[i][j][k]<=food[i][j]){
+                    food[i][j] -= tree[i][j][k];//나이만큼 섭취
+                    tree[i][j][k]+=1;//나이 증가
+                }else{
+                    death[i][j]+=(tree[i][j][k]/2);//추가량
+                    tree[i][j].erase(tree[i][j].begin()+k);//제거
+                    k--;
+                }
+            }
+        }
+    }
+}
+//여름
+void summer(){
+    for(int i=1;i<=n;i++){
+        for(int j=1;j<=n;j++){
+            food[i][j] += death[i][j];//죽은 나무의 양분 추가
+        }
+    }
+    memset(death,0,sizeof(death));//초기화
+}
+//가을
+void fall(){
+    for(int i=1;i<=n;i++){
+        for(int j=1;j<=n;j++){
+            //나무 탐색
+            int tree_size = tree[i][j].size();
+            for(int k=0;k<tree_size;k++){
+                //나이 조건
+                if(tree[i][j][k]%5==0 && tree[i][j][k]>0){
+                    for(int dir=0;dir<8;dir++){
+                        int nx = i + dx[dir];
+                        int ny = j + dy[dir];
+                        //범위 초과
+                        if(nx<1 || nx>n || ny<1 || ny>n){
+                            continue;
+                        }
+                        tree[nx][ny].push_back(1);//묘목
+                    }
+                }
+            }
+        }
+    }
+}
+//겨울
+void winter(){
+    for(int i=1;i<=n;i++){
+        for(int j=1;j<=n;j++){
+            food[i][j] += A[i][j];
+        }
+    }
+}
+//생존한 나무의 수
+int survive(){
+    int cnt = 0;
+    for(int i=1;i<=n;i++){
+        for(int j=1;j<=n;j++){
+            cnt+=tree[i][j].size();
+        }
+    }
+    return cnt;
+}
+//나무 재테크
+void business(){
+    for(int i=1;i<=year;i++){
+        //사계절
+        spring();
+        summer();
+        fall();
+        winter();
+    }
+    cout<<survive();//생존한 나무의 개수
+}
+int main(){
+    input();//입력
+    business();//나무 재테크
+    return 0;
+}
