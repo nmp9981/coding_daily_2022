@@ -1,0 +1,29 @@
+#include <iostream>
+using namespace std;
+typedef long long ll;
+
+ll n;
+const int maxi = 31;
+ll dp[maxi][maxi];//정상 개수, 반쪽 개수
+//초기화
+void init(){
+    dp[1][0] = 1;
+    for(int j=0;j<maxi;j++) dp[0][j] = 1;
+}
+//알약
+ll fill(int x,int y){
+    if(dp[x][y]!=0) return dp[x][y];//이미 값이 있다면
+    if(x<0 || y<0) return 0;//범위 초과
+    return dp[x][y] = fill(x-1,y+1) + fill(x,y-1);
+}
+
+int main(){
+    init();
+    fill(29,1);
+    while(1){
+        cin>>n;
+        if(n==0) break;
+        cout<<dp[n-1][1]<<"\n";
+    }
+    return 0;
+}
