@@ -1,0 +1,59 @@
+#include <iostream>
+using namespace std;
+
+int n,m,k;
+const int maxi = 201;
+const int inf = 1010101010;
+int dp[maxi][maxi];
+string s;
+
+//조합구하기
+void combi(){
+    dp[1][0] = 1;dp[1][1] = 1;
+    for(int i=2;i<maxi;i++){
+        for(int j=0;j<=i;j++){
+            if(j==0 || j==i){
+                dp[i][j] = 1;
+                continue;
+            }
+            dp[i][j] = dp[i-1][j]+dp[i-1][j-1];
+            if(dp[i][j]>=inf) dp[i][j] = inf;
+        }
+    }
+}
+
+void dfs(int a,int z,int k){
+    //a가 없다
+    if(a==0){
+        for(int i=0;i<z;i++){
+            s+='z';
+        }
+        return;
+    }
+    //z가 없다
+    if(z==0){
+        for(int i=0;i<a;i++){
+            s+='a';
+        }
+        return;
+    }
+    //a기준
+    if(dp[a+z-1][a-1]<k){
+        s+='z';
+        int next = k-dp[a+z-1][a-1];
+        dfs(a,z-1,next);
+    }else{
+        s+='a';
+        dfs(a-1,z,k);
+    }
+}
+int main(){
+    combi();//조합구하기
+    cin>>n>>m>>k;
+    if(dp[n+m][m]<k) cout<<-1;
+    else{
+        dfs(n,m,k);//a,z개수, k
+        cout<<s;
+    }
+    return 0;
+}
