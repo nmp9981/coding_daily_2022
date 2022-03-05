@@ -1,0 +1,51 @@
+#include <iostream>
+#include <vector>
+using namespace std;
+typedef long long ll;
+typedef vector<vector<ll>> Matrix;
+
+ll n,m,g;
+const ll r = 2;
+const ll mod = 1000000007;
+Matrix M(r,vector<ll>(r));
+Matrix ans(r,vector<ll>(r));
+
+//유클리드 알고리즘
+ll gcd(ll a,ll b){
+    if(b==0) return a;
+    return gcd(b,a%b);
+}
+
+//행렬의 곱셈
+Matrix mul(Matrix p,Matrix q){
+    Matrix temp(r,vector<ll>(r));
+    for(int i=0;i<r;i++){
+        for(int j=0;j<r;j++){
+            for(int k=0;k<r;k++){
+                temp[i][j]+=(p[i][k]*q[k][j]);
+            }
+            temp[i][j]%=mod;
+        }
+    }
+    return temp;
+}
+
+//분할
+Matrix dfs(ll x){
+    if(x==1) return M;
+    
+    Matrix f,res;
+    f = dfs(x/2);
+    if(x%2==0) res = mul(f,f);
+    else res = mul(mul(f,f),M);
+    return res;
+}
+
+int main(){
+    cin>>n>>m;
+    g = gcd(n,m);//최대공약수
+    M = {{1,1},{1,0}};
+    ans = dfs(g);//분할
+    cout<<ans[1][0];
+    return 0;
+}
