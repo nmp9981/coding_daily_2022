@@ -1,0 +1,71 @@
+#include <iostream>
+#include <vector>
+#include <cstring>
+using namespace std;
+
+int n,m;
+const int maxi = 51;
+const int inf = 1e+8;
+int res = inf;
+int city[maxi][maxi];//도시
+vector<pair<int,int>> house;//집
+vector<pair<int,int>> chicken;//치킨집
+vector<pair<int,int>> selected;//선택한 치킨집
+
+//입력
+void input(){
+    cin>>n>>m;
+    for(int i=0;i<n;i++){
+        for(int j=0;j<n;j++){
+            cin>>city[i][j];
+            //집
+            if(city[i][j]==1) house.push_back({i,j});
+            //치킨집
+            if(city[i][j]==2) chicken.push_back({i,j});
+        }
+    }
+}
+//치킨 거리
+int chicken_dist(){
+    int total = 0;
+    for(int i=0;i<house.size();i++){//집부터
+        int hx = house[i].first;
+        int hy = house[i].second;
+        int dist = inf;
+        for(int j=0;j<selected.size();j++){//치킨집까지
+            int cx = selected[j].first;
+            int cy = selected[j].second;
+            //맨해튼 거리
+            dist = min(dist,abs(hx-cx)+abs(cy-hy));
+        }
+        total+=dist;
+    }
+    return total;
+}
+//치킨집 선택
+void select_chicken(int idx,int cnt){
+    //m개 모두 선택
+    if(cnt==m){
+        res = min(chicken_dist(),res);
+        return;
+    }
+    //다음 치킨집
+    int chicken_size = chicken.size();
+    for(int i=idx;i<chicken_size;i++){
+        int c_x = chicken[i].first;
+        int c_y = chicken[i].second;
+        selected.push_back({c_x,c_y});//선택
+        select_chicken(i+1,cnt+1);//재귀
+        selected.pop_back();//선택해제
+    }
+}
+int main(){
+    //빠른 입력
+    ios::sync_with_stdio(false);
+    cin.tie(0);
+    
+    input();//입력
+    select_chicken(0,0);//치킨집 선택
+    cout<<res;//출력
+    return 0;
+}
