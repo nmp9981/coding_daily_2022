@@ -1,0 +1,48 @@
+#include <iostream>
+using namespace std;
+
+int n;
+const int maxi = 17;
+int pipe[maxi][maxi];
+int dp[maxi][maxi][3];
+
+//입력
+void input(){
+    cin>>n;
+    for(int i=1;i<=n;i++){
+        for(int j=1;j<=n;j++){
+            cin>>pipe[i][j];
+        }
+    }
+}
+//연결
+void connect(){
+    //첫줄
+    dp[1][2][0] = 1;
+    for(int j=3;j<=n;j++){
+        if(pipe[1][j]==0) dp[1][j][0] = dp[1][j-1][0];
+    }
+    //파이프 연결
+    for(int i=2;i<=n;i++){
+        for(int j=3;j<=n;j++){
+            //가로
+            if(pipe[i][j]==0 && pipe[i][j-1]==0){
+                dp[i][j][0] = dp[i][j-1][0] + dp[i][j-1][2];
+            }
+            //세로
+            if(pipe[i][j]==0 && pipe[i-1][j]==0){
+                dp[i][j][1] = dp[i-1][j][1] + dp[i-1][j][2];
+            }
+            //대각선
+            if(pipe[i][j]==0 && pipe[i-1][j]==0 && pipe[i][j-1]==0 && pipe[i-1][j-1]==0){
+                dp[i][j][2] = dp[i-1][j-1][0] + dp[i-1][j-1][1] + dp[i-1][j-1][2];
+            }
+        }
+    }
+    cout<<dp[n][n][0]+dp[n][n][1]+dp[n][n][2];
+}
+int main(){
+    input();//입력
+    connect();//연결
+    return 0;
+}
