@@ -1,0 +1,65 @@
+#include <iostream>
+#include <algorithm>
+using namespace std;
+
+int n,m,h;
+const int inf = 1e+7;
+bool board[31][11];
+int res = inf;
+
+//입력
+void input(){
+    cin>>n>>m>>h;
+    for(int i=0;i<m;i++){
+        int a,b;
+        cin>>a>>b;
+        board[a][b] = true;//사다리 설치
+    }
+}
+//사다리 타기
+bool play(){
+    for(int j=1;j<=n;j++){//시작점 정하기
+        int idx = j;//시작지점
+        for(int i=1;i<=h;i++){//내려가기
+            //사다리 발견
+            if(board[i][idx]==true) idx++;
+            else if(board[i][idx-1]==true) idx--;
+        }
+        //일치하는가?
+        if(idx!=j) return false;
+    }
+    return true;
+}
+//사다리 설치
+void ladder(int cnt,int y){
+    //사다리타기
+    if(play()){
+        res = min(res,cnt);
+        return;
+    }
+    //개수 초과
+    if(cnt>=3) return;
+    //사다리 설치
+    for(int i=y;i<=h;i++){//사다리는 아래로만 이동
+        for(int j=1;j<n;j++){
+            //설치가 가능환가?
+            if(board[i][j]==true) continue;
+            if(board[i][j-1]==false && board[i][j+1]==false){
+                board[i][j] = true;//설치
+                ladder(cnt+1,i);//다음 사다리
+                board[i][j] = false;//설치 해제
+            }
+        }
+    }
+}
+int main(){
+    //빠른 입력
+    ios_base::sync_with_stdio(false);
+    cin.tie(0);
+    
+    input();//입력
+    ladder(0,1);//사다리 설치
+    if(res>=inf) cout<<-1;
+    else cout<<res;
+    return 0;
+}
