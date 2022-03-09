@@ -1,0 +1,59 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+int n,m;
+const int maxi = 16;
+vector<char> alpha;//알파벳
+bool visit[maxi];//방문여부
+char aeiou[5] = {'a','e','i','o','u'};//모음
+
+//입력
+void input(){
+	cin>>n>>m;
+	for(int i=0;i<m;i++){
+		char c;
+		cin>>c;
+		alpha.push_back(c);
+	}
+	sort(alpha.begin(),alpha.end());//정렬
+}
+//알파벳 체크
+bool check(string x){
+	int cnt = 0;
+	for(int i=0;i<n;i++){
+		for(int j=0;j<5;j++){
+			if(x[i]==aeiou[j]) cnt++;
+		}
+	}
+	//개수 확인
+	if(cnt>=1 && n-cnt>=2) return true;
+	return false;
+}
+//재귀 탐색
+void dfs(int idx,string s){
+	if(s.size()==n){
+		if(check(s)){
+			cout<<s<<"\n";
+		}
+		return;
+	}
+	//다음지점
+	for(int i=idx;i<m;i++){
+		if(visit[i]==true) continue;
+		visit[i] = true;
+		string next = s+alpha[i];
+		dfs(i+1,next);
+		visit[i] = false;
+	}
+}
+	
+int main(){
+    //빠른 입출력
+    ios::sync_with_stdio(false);
+    cin.tie(0);cout.tie(0);
+    
+    input();//입력
+    dfs(0,"");//탐색
+}
