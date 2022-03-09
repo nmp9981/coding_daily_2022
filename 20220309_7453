@@ -1,0 +1,63 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+typedef long long ll;
+
+int n;
+const int maxi = 4001;
+int a[maxi];int b[maxi];int c[maxi];int d[maxi];
+vector<int> s1;
+vector<int> s2;
+	
+void input(){
+	cin>>n;
+	for(int i=0;i<n;i++){
+		cin>>a[i]>>b[i]>>c[i]>>d[i];
+	}
+}
+
+void solve(){
+	for(int i=0;i<n;i++){
+		for(int j=0;j<n;j++){
+			s1.push_back(a[i]+b[j]);
+			s2.push_back(c[i]+d[j]);
+		}
+	}
+	sort(s1.begin(),s1.end());//오름차순
+	sort(s2.begin(),s2.end(),greater<int>());//내림차순
+	
+	ll cnt=0;
+	int up=0;int down=0;
+	int up_size=s1.size();
+	int down_size=s2.size();
+	while(1){
+		//종료조건
+		if(up==up_size || down==down_size) break;
+		
+		if(s1[up]+s2[down]>0) down++;
+		else if(s1[up]+s2[down]<0) up++;
+		else{
+			ll up_cnt=0;ll down_cnt=0;
+			while(up<up_size && s1[up]+s2[down]==0){
+				up_cnt++;
+				up++;
+			}
+			up--;
+			while(down<down_size && s1[up]+s2[down]==0){
+				down_cnt++;
+				down++;
+			}
+			cnt+=(down_cnt*up_cnt);
+		}
+	}
+	cout<<cnt;
+}
+int main(){
+    //빠른 입출력
+    ios::sync_with_stdio(false);
+    cin.tie(0);cout.tie(0);
+    
+    input();//입력
+    solve();//탐색
+}
