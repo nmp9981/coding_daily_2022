@@ -1,0 +1,51 @@
+#include <iostream>
+using namespace std;
+
+int n,m;
+const int maxi = 2001;
+int a[maxi];//수열
+int dp[maxi][maxi];//i~j까지 팰린드롬인가?
+
+//입력
+void input(){
+	cin>>n;
+	for(int i=1;i<=n;i++){
+		cin>>a[i];
+		dp[i][i]=1;//한자리수는 팰린드롬
+	}
+}
+//팰린드롬인가?
+void palindrome(){
+	//2자리
+	for(int i=1;i<n;i++){
+		if(a[i]==a[i+1]) dp[i][i+1]=1;
+		else dp[i][i+1] = 0;
+	}
+	for(int l=2;l<n;l++){//수열 길이
+		for(int i=1;i<=n-l;i++){
+			int j = i+l;//종료지점
+			//사이가 팰린드롬이고 양끝이 같으면 
+			if(dp[i+1][j-1]==1 && a[i]==a[j]) dp[i][j]=1;
+			else dp[i][j]=0;
+		}
+	}		
+}
+//질문
+void question(){
+	cin>>m;
+	for(int t=0;t<m;t++){
+		int a,b;
+		cin>>a>>b;
+		cout<<dp[a][b]<<"\n";
+	}
+}
+
+int main(){
+    //빠른 입출력
+    ios::sync_with_stdio(false);
+    cin.tie(0);cout.tie(0);
+    
+    input();//입력
+    palindrome();//팰린드롬 판별
+    question();//질문
+}
