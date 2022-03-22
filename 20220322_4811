@@ -1,0 +1,31 @@
+#include <iostream>
+#include <cstring>
+using namespace std;
+typedef long long ll;
+
+int n;
+const int maxi = 31;
+ll dp[maxi][maxi];//정상개수, 반쪽개수
+
+ll dfs(int i,int j) {
+	//범위를 넘는가?
+	if (i < 0 || i >= maxi || j < 0 || j >= maxi) return 0;
+	//이미 값이 있다면
+	if (dp[i][j] != -1) return dp[i][j];
+	//반쪽을 먹은 경우 + 정상인 쪽을 먹은 경우
+	dp[i][j] = dfs(i, j - 1) + dfs(i - 1, j + 1);
+	return dp[i][j];
+}
+int main() {
+	memset(dp, -1, sizeof(dp));//초기화
+	//반쪽만
+	for (int j = 0; j < maxi; j++) dp[0][j] = 1;
+	dp[1][0] = 1;//초기값
+	dfs(maxi-2,1);//경우의 수 구하기
+	while (1) {
+		cin >> n;
+		if (n == 0) break;//종료
+		cout << dp[n - 1][1]<<"\n";//출력
+	}
+	return 0;
+}
