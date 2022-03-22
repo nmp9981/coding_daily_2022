@@ -1,0 +1,95 @@
+#include <iostream>
+#include <cstring>
+#include <queue>
+using namespace std;
+
+int r,c;
+int day = 0;//날짜
+const int maxi = 51;
+string world[maxi];//지도
+bool visit[maxi][maxi];//고슴도치 방문 체크
+queue<pair<int, int>> water;//물의 위치
+queue<pair<int, int>> hedgehog;//고슴도치 위치
+//축이동
+int dx[4] = { -1,1,0,0 };
+int dy[4] = { 0,0,-1,1 };
+
+//입력
+void input() {
+	cin >> r >> c;
+	for (int i = 0; i < r; i++) cin >> world[i];
+}
+//탈출
+void escape() {
+	//초기위치 담기
+	for (int i = 0; i < r; i++) {
+		for (int j = 0; j < c; j++) {
+			if (world[i][j] == '*') {//물
+				water.push({ i,j });
+			}
+			else if (world[i][j] == 'S') {//고슴도치
+				visit[i][j] = true;
+				hedgehog.push({ i,j });
+			}
+		}
+	}
+	//고슴도치 이동
+	while (1) {
+		//물이동
+		int water_size = water.size();
+		for (int i = 0; i < water_size; i++) {
+			int x = water.front().first;
+			int y = water.front().second;
+			water.pop();
+
+			//다음지점
+			for (int j = 0; j < 4; j++) {
+				int nx = x + dx[j];
+				int ny = y + dy[j];
+				//범위내에 드는가?
+				if (nx < 0 || nx >= r || ny < 0 || ny >= c) continue;
+				//빈공간이면
+				if (world[nx][ny] == '.' || world[nx][ny] == 'S') {
+					water.push({ nx,ny });
+					world[nx][ny] = '*';//맵 갱신
+				}
+			}
+		}
+		//고슴도치 이동
+		int hedgehog_size = hedgehog.size();
+		if (hedgehog_size == 0) {//이동가능 공간이 없다
+			cout << "KAKTUS";
+			break;
+		}
+		for (int i = 0; i < hedgehog_size; i++) {
+			int x = hedgehog.front().first;
+			int y = hedgehog.front().second;
+			hedgehog.pop();
+
+			//탈출 성공
+			if (world[x][y] == 'D') {
+				cout << day;
+				return;
+			}
+			//다음 지점
+			for (int j = 0; j < 4; j++) {
+				int nx = x + dx[j];
+				int ny = y + dy[j];
+				//범위내에 드는가?
+				if (nx < 0 || nx >= r || ny < 0 || ny >= c) continue;
+				//빈공간이고(비버의 소굴 포함) 미방문
+				if (visit[nx][ny]) continue;
+				if (world[nx][ny] == '.' || world[nx][ny]=='D') {
+					hedgehog.push({ nx,ny });
+					visit[nx][ny] = true;//방문 체크
+				}
+			}
+		}
+		day++;//시간 증가
+	}
+}
+int main() {
+	input();//입력
+	escape();//탈출
+	return 0;
+}
