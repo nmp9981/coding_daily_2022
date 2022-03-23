@@ -1,0 +1,64 @@
+#include <iostream>
+using namespace std;
+
+int n, m;
+const int maxi = 101;
+const int inf = 1e+8;
+int dp[maxi][maxi];//i->j의 최단거리
+int obj[maxi];//셀 수 있는 물건의 개수
+
+//입력
+void input() {
+	cin.tie(0);//빠른 입력
+	cin >> n >> m;
+	//초기화
+	for (int i = 1; i <= n; i++) {
+		for (int j = 1; j <= n; j++) {
+			if (i == j) dp[i][j] = 0;//자기자신은 0으로
+			else dp[i][j] = inf;
+		}
+	}
+	//입력
+	for (int i = 0; i < m; i++) {
+		int a, b;
+		cin >> a >> b;
+		dp[a][b] = 1;
+	}
+}
+//플로이드 알고리즘
+void floyd() {
+	for (int k = 1; k <= n; k++) {
+		for (int i = 1; i <= n; i++) {
+			for (int j = 1; j <= n; j++) {
+				dp[i][j] = min(dp[i][j], dp[i][k] + dp[k][j]);
+			}
+		}
+	}
+}
+//검사하기
+void inspect() {
+	//행검사
+	for (int i = 1; i <= n; i++) {
+		for (int j = 1; j <= n; j++) {
+			if (dp[i][j] > 0 && dp[i][j] < inf) {
+				obj[i]++;
+			}
+		}
+	}
+	//열검사
+	for (int j = 1; j <= n; j++) {
+		for (int i = 1; i <= n; i++) {
+			if (dp[i][j] > 0 && dp[i][j] < inf) {
+				obj[j]++;
+			}
+		}
+	}
+	//셀 수 없는 물건의 개수
+	for (int i = 1; i <= n; i++) cout << n - 1 - obj[i] << "\n";
+}
+int main() {
+	input();//입력
+	floyd();//플로이드
+	inspect();//검사하기
+	return 0;
+}
