@@ -1,0 +1,67 @@
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <cmath>
+using namespace std;
+
+int n;
+const int maxi = 101;
+double x_pos[maxi];//x좌표
+double y_pos[maxi];//y좌표
+int parent[maxi];//각 노드의 부모노드
+vector<pair<double, pair<int,int>>> star;//별간 거리
+
+//입력
+void input() {
+	cin.tie(0);//빠른 입력
+	cin >> n;
+	for (int i = 1; i <= n; i++) {
+		cin >> x_pos[i] >> y_pos[i];
+		parent[i] = i;//초기화
+	}
+}
+//부모노드 구하기
+int find(int x) {
+	if (parent[x] == x) return x;//루트노드
+	return parent[x] = find(parent[x]);
+}
+//크루스칼
+void kruskal() {
+	//거리 구하기
+	for (int i = 1; i < n; i++) {
+		for (int j = i + 1; j <= n; j++) {
+			double dist = sqrt(pow(x_pos[i] - x_pos[j], 2) + pow(y_pos[i]-y_pos[j],2));
+			star.push_back({ dist,{i,j} });
+		}
+	}
+	sort(star.begin(), star.end());//정렬
+	//최단 거리
+	double total = 0;
+	int cnt = 0;//연결된 노드의 개수
+	for (int i = 0; i < star.size(); i++) {
+		double cost = star[i].first;
+		int x = star[i].second.first;
+		int y = star[i].second.second;
+
+		int a = find(x);//x의 부모노드
+		int b = find(y);//y의 부모노드
+		//연결이 안되었으면
+		if (a != b) {
+			parent[b] = a;//연결
+			total += cost;
+			cnt++;
+		}
+
+		//노드 모두 연결
+		if (cnt == n - 1) {
+			printf("%.2f", total);
+			break;
+		}
+	}
+}
+
+int main() {
+	input();//입력
+	kruskal();//크루스칼
+	return 0;
+}
