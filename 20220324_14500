@@ -1,0 +1,77 @@
+#include <iostream>
+#include <algorithm>
+using namespace std;
+
+int n,m,ans;
+const int maxi = 501;
+int world[maxi][maxi];//맵
+bool visit[maxi][maxi];//방문여부
+//축이동
+int dx[4] = { -1,1,0,0 };
+int dy[4] = { 0,0,-1,1 };
+//ㅏ모양 이동
+int ah_dir[4][4][2] = { {{0,0},{1,0},{2,0},{1,1}},{{0,0},{0,1},{0,2},{1,1}},{{0,1},{1,0},{1,1},{2,1}},{{0,1},{1,0},{1,1},{1,2}} };
+//입력
+void input() {
+	cin.tie(0);//빠른 입력
+	cin>>n>>m;
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < m; j++) cin >> world[i][j];
+	}
+}
+//일반 모양 탐색
+void dfs(int x,int y,int cnt,int sum) {//좌표,개수,합
+	//4칸을 채웠으면
+	if (cnt == 4) {
+		ans = max(ans, sum);
+		return;
+	}
+	//다음지점
+	for (int i = 0; i < 4; i++) {
+		int nx = x + dx[i];
+		int ny = y + dy[i];
+		//범위내에 드는가?
+		if (nx < 0 || nx >= n || ny < 0 || ny >= m) continue;
+		//미방문인가?
+		if (visit[nx][ny]) continue;
+		visit[nx][ny] = true;//방문 체크
+		int next = sum + world[nx][ny];
+		dfs(nx, ny, cnt + 1, next);
+		visit[nx][ny] = false;//체크 해제
+	}
+}
+//ㅏ모양
+void ah(int x,int y) {
+	//각 방향에 대해
+	for (int i = 0; i < 4; i++) {
+		int ah_sum = 0;
+		//4칸 이동
+		for (int j=0; j < 4; j++) {
+			int nx = x + ah_dir[i][j][0];
+			int ny = y + ah_dir[i][j][1];
+			//범위내에 드는가?
+			if (nx < 0 || nx >= n || ny < 0 || ny >= m) continue;
+			ah_sum += world[nx][ny];
+		}
+		ans = max(ans, ah_sum);
+	}
+}
+int main() {
+	input();//입력
+	//일반모양
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < m; j++) {
+			visit[i][j] = true;//방문체크
+			dfs(i, j, 1,world[i][j]);//재귀
+			visit[i][j] = false;//체크 해제
+		}
+	}
+	//ㅏ모양
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < m; j++) {
+			ah(i, j);//시작지점
+		}
+	}
+	cout << ans;//출력
+	return 0;
+}
