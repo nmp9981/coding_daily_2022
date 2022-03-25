@@ -1,0 +1,37 @@
+#include <iostream>
+#include <algorithm>
+using namespace std;
+
+int a, b, c;
+string x, y;
+const int maxi = 3001;
+int dp[maxi][maxi];//x문자열 i,y문자열 j번까지 했을때의 점수
+
+//입력
+void input() {
+	cin >> a >> b >> c;
+	cin>>x>>y;
+}
+//점수계산
+void score() {
+	//초기점수
+	dp[0][0] = 0;
+	int x_size = x.size();
+	int y_size = y.size();
+	//한 문자열만
+	for (int i = 1; i <= x_size; i++) dp[i][0] = b * i;
+	for (int j = 1; j <= y_size; j++) dp[0][j] = b * j;
+	//점화식
+	for (int i = 1; i <= x_size; i++) {
+		for (int j = 1; j <= y_size; j++) {
+			if (x[i - 1] == y[j - 1]) dp[i][j] = max({ dp[i - 1][j] + b, dp[i][j - 1] + b, dp[i - 1][j - 1] + a });
+			else dp[i][j] = max({ dp[i - 1][j] + b, dp[i][j - 1]+b, dp[i - 1][j - 1] + c });
+		}
+	}
+	cout << dp[x_size][y_size];//출력
+}
+int main() {
+	input();//입력
+	score();//점수
+	return 0;
+}
