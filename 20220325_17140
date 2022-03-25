@@ -1,0 +1,95 @@
+#include <iostream>
+#include <vector>
+#include <cstring>
+#include <algorithm>
+using namespace std;
+
+int r,c,k,r_size,c_size;
+const int maxi = 101;
+int A[maxi][maxi];
+
+//입력
+void input() {
+	cin >> r >> c >> k;
+	for (int i = 1; i <= 3; i++) {
+		for (int j = 1; j <= 3; j++) cin >> A[i][j];
+	}
+}
+//R연산
+void R() {
+	//모든 행에 대해서
+	for (int i = 1; i <= r_size; i++) {
+		int digit[maxi];//각 숫자의 등장횟수
+		memset(digit, 0, sizeof(digit));
+		//각 숫자 등장횟수 넣기
+		for (int j = 1; j <= c_size; j++) {
+			if (A[i][j] > 0) digit[A[i][j]]++;
+		}
+		//벡터에 넣기
+		vector<pair<int,int>> num;//등장횟수, 숫자
+		for (int j = 1; j < maxi; j++) {
+			if (digit[j] > 0) num.push_back({digit[j],j});//등장횟수 기준으로 정렬하므로
+		}
+		sort(num.begin(),num.end());//정렬
+		//배열갱신
+		int num_size = num.size();
+		c_size = max(c_size,2*num_size);
+		for (int j = 0; j < num_size; j++) {
+			A[i][2*j+1] = num[j].second;
+			A[i][2*j+2] = num[j].first;
+		}
+		//뒷부분은 0으로
+		for (int j = 2 * num_size + 1; j <= c_size; j++) A[i][j] = 0;
+		//범위초과
+		if (c_size > 100) c_size = 100;
+	}
+}
+//C연산
+void C() {
+	//모든 열에 대해서
+	for (int j = 1; j <= c_size; j++) {
+		int digit[maxi];//각 숫자의 등장횟수
+		memset(digit, 0, sizeof(digit));
+		//각 숫자 등장횟수 넣기
+		for (int i = 1; i <= r_size; i++) {
+			if (A[i][j] > 0) digit[A[i][j]]++;
+		}
+		//벡터에 넣기
+		vector<pair<int, int>> num;//등장횟수, 숫자
+		for (int i = 1; i < maxi; i++) {
+			if (digit[i] > 0) num.push_back({ digit[i],i });//등장횟수 기준으로 정렬하므로
+		}
+		sort(num.begin(), num.end());//정렬
+		//배열갱신
+		int num_size = num.size();
+		r_size = max(r_size, 2 * num_size);
+		for (int i = 0; i < num_size; i++) {
+			A[2*i+1][j] = num[i].second;
+			A[2*i+2][j] = num[i].first;
+		}
+		//뒷부분은 0으로
+		for (int i = 2 * num_size + 1; i <= r_size; i++) A[i][j] = 0;
+		//범위초과
+		if (r_size > 100) r_size = 100;
+	}
+}
+//연산하기
+void cal() {
+	r_size = 3; c_size = 3;
+	for (int t = 0; t <= 100;t++) {
+		//종료
+		if (A[r][c] == k) {
+			cout << t;
+			return;
+		}
+		//RC연산
+		if (r_size >= c_size) R();
+		else C();
+	}
+	cout << -1;//100초가 지나도 도달X
+}
+int main() {
+	input();//입력
+	cal();//연산
+	return 0;
+}
