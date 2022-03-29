@@ -1,0 +1,47 @@
+#include <iostream>
+using namespace std;
+
+int n;
+double total = 0;//누적확률
+const int maxi = 29;
+bool visit[maxi][maxi];
+double dir[4];//방향별 확률
+//축 이동
+int dx[4] = { -1,1,0,0 };
+int dy[4] = { 0,0,-1,1 };
+
+//입력
+void input() {
+	cin >> n;
+	for (int i = 0; i < 4; i++) {
+		cin >> dir[i];//확률 입력
+		dir[i] /= 100;
+	}
+}
+
+//맵 이동
+void dfs(int x, int y,int cnt,double p) {
+	if (cnt == n) {
+		total += p;
+		return;
+	}
+	//4방이동
+	for (int i = 0; i < 4; i++) {
+		int nx = x + dx[i];
+		int ny = y + dy[i];
+		//미방문이면
+		if (visit[nx][ny] == false) {
+			visit[nx][ny] = true;//방문 체크
+			double next_p = p * dir[i];//다음 확률
+			dfs(nx, ny, cnt + 1, next_p);//재귀
+			visit[nx][ny] = false;//체크 해제
+		}
+	}
+}
+int main() {
+	input();//입력
+	visit[maxi/2][maxi/ 2] = true;//방문체크
+	dfs(maxi/2,maxi/2,0,1);//맵 이동
+	printf("%.9f",total);//최종 확률
+	return 0;
+}
