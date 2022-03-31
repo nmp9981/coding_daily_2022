@@ -1,0 +1,42 @@
+#include <iostream>
+#include <queue>
+#include <vector>
+using namespace std;
+
+int n,d,w;
+vector<pair<int,int>> task;//과제
+
+//입력
+void input() {
+	cin >> n;
+	for (int i = 0; i < n; i++) {
+		cin >> d >> w;
+		task.push_back({ d,w });//마감일자, 점수
+	}
+	sort(task.begin(), task.end());//정렬
+}
+
+//숙제
+void homework() {
+	priority_queue<int, vector<int>, greater<int>> pq;//최소힙
+	for (int i = 0; i < n; i++) {
+		int day = task[i].first;
+		int score = task[i].second;
+
+		pq.push(score);//점수넣기
+		//용량초과
+		if (pq.size() > day) pq.pop();
+	}
+	//점수총합
+	int total = 0;
+	while (!pq.empty()) {
+		total += pq.top();
+		pq.pop();
+	}
+	cout << total;//출력
+}
+int main() {
+	input();//입력
+	homework();//숙제
+	return 0;
+}
