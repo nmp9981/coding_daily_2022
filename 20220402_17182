@@ -1,0 +1,64 @@
+#include <iostream>
+#include <algorithm>
+using namespace std;
+
+int n,k;
+const int maxi = 10;
+const int inf = 1e+8;
+int planet[maxi][maxi];//i->j이동 시간
+int dp[maxi][maxi];//i->j 최단 이동 시간
+bool visit[maxi];//i번 행성 방문 여부
+int ans = inf;//최단 시간
+
+//입력
+void input() {
+	cin >> n>>k;
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < n; j++) cin >> planet[i][j];
+	}
+}
+//플로이드
+void floyd() {
+	//초기화
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < n; j++) {
+			if (i == j) dp[i][j] = 0;
+			else dp[i][j] = inf;
+		}
+	}
+	//플로이드
+	for (int k = 0; k < n; k++) {//경유지점
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < n; j++) {
+				dp[i][j] = min(dp[i][j], planet[i][k] + planet[k][j]);
+			}
+		}
+	}
+}
+//행성 탐방
+void dfs(int start, int cnt, int times) {
+	//행성 모두 방문
+	if (cnt == n) {
+		ans = min(ans, times);
+		return;
+	}
+	//다음 행성
+	for (int i = 0; i < n; i++) {
+		if (i == start) continue;
+		//미방문 행성이면
+		if (visit[i] == false) {
+			visit[i] = true;//방문체크
+			int next = times + dp[start][i];//누적 시간
+			dfs(i, cnt + 1, next);
+			visit[i] = false;
+		}
+	}
+}
+int main() {
+	input();//입력
+	floyd();//플로이드
+	visit[k] = true;//방문 체크
+	dfs(k,1,0);//행성 탐방
+	cout << ans;//출력
+	return 0;
+}
