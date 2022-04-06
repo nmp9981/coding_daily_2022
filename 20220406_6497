@@ -1,0 +1,70 @@
+#include <iostream>
+#include <vector>
+#include <cstring>
+#include <algorithm>
+using namespace std;
+
+int n,m,total;
+const int maxi = 200001;
+int parent[maxi];//각 노드의 부모노드
+vector<pair<int, pair<int, int>>> tree;//트리
+//초기화
+void init() {
+	tree.clear();//초기화
+	total = 0;
+}
+//입력
+void input() {
+	//부모노드 초기화
+	for (int i = 0; i < m; i++) {
+		parent[i] = i;
+	}
+	for (int i = 0; i < n; i++) {
+		int x, y, z;
+		cin >> x >> y >> z;
+		tree.push_back({ z,{x,y} });//트리 입력
+		total += z;//총 거리
+	}
+	sort(tree.begin(), tree.end());//비용순으로 정렬
+}
+//각 노드의 부모노드 찾기
+int find(int a) {
+	if (parent[a] == a) return a;
+	return parent[a] = find(parent[a]);
+}
+
+//배낭넣기
+void kruskal() {
+	int fee = 0;//비용
+	int node = 0;//노드 개수
+	for (int i = 0; i < tree.size(); i++) {
+		int x = tree[i].second.first;
+		int y = tree[i].second.second;
+		int cost = tree[i].first;
+
+		//각 노드의 부모노드
+		int a = find(x);
+		int b = find(y);
+		if (a != b) {//루트노드가 서로 다르다면 연결
+			parent[b] = a;//연결
+			node++;//연결된 노드 증가
+			fee += cost;//비용 증가
+		}
+
+		//모두 연결
+		if (node == m - 1) {
+			cout << total - fee<<"\n";
+			break;
+		}
+	}
+}
+int main() {
+	while (1) {
+		cin >> m >> n;
+		if (m == 0 && n == 0) return 0;//종료
+		input();//입력
+		kruskal();//크루스칼
+		init();//초기화
+	}
+	return 0;
+}
