@@ -1,0 +1,89 @@
+#include <iostream>
+#include <vector>
+using namespace std;
+
+int n;
+const int maxi = 500;
+int A[maxi][maxi];//지도
+//토네이도 이동
+int dx[4] = { 0,1,0,-1};
+int dy[4] = { -1,0,1,0};
+int total = 0;//총 모래양
+//모래 흩날리기
+int ddx[4][10] = {
+	{-1,1,-2,2,0,-1,1,-1,1,0},
+	{-1,-1,0,0,2,0,0,1,1,1},
+	{-1,1,-2,2,0,-1,1,-1,1,0},
+	{1,1,0,0,-2,0,0,-1,-1,-1}
+};
+int ddy[4][10] = {
+	{1,1,0,0,-2,0,0,-1,-1,-1},
+	{-1,1,-2,2,0,-1,1,-1,1,0},
+	{-1,-1,0,0,2,0,0,1,1,1},
+	{-1,1,-2,2,0,-1,1,-1,1,0}
+};
+int amount[10] = {1,1,2,2,5,7,7,10,10,55};//흩날리는 모래의 비율
+
+//입력
+void input() {
+	cin >> n;
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < n; j++) cin >> A[i][j];
+	}
+}
+//모래누적
+int sand(int x, int y, int dir) {
+	int outside = 0;//바깥으로 떨어지는 모래의 양
+	int rest_sand = A[x][y];//남은 모래의 양
+
+	if (rest_sand == 0) return 0;//모래의양이 0이면 다음으로
+
+	for (int i = 0; i < 10; i++) {
+		int nx = x + ddx[dir][i];
+		int ny = y + ddy[dir][i];
+		int scatter = A[x][y] * amount[i] / 100;//날아가는 모래의 양
+
+		//마지막지점
+		if (i == 9) scatter = rest_sand;
+		//남은모래 갱신
+		rest_sand -= scatter;
+		//범위를 벗어나면
+		if (nx < 0 || nx >= n || ny < 0 || ny >= n) {
+			outside += scatter;//바깥 모래 누적
+			continue;
+		}
+		A[nx][ny] += scatter;//모래 쌓기
+	}
+	A[x][y] = 0;
+	return outside;
+}
+//토네이도 이동
+void tonado() {
+	int x = n / 2;//시작지점
+	int y = n / 2;
+	int length = 0;
+	while (1) {
+		//회전'
+		for (int dir = 0; dir < 4; dir++) {//토네이도 방향
+			//길이증가
+			if (dir % 2 == 0) length++;
+
+			for (int l = 1; l <= length; l++) {//이동
+				x += dx[dir];
+				y += dy[dir];
+				total += sand(x, y, dir);//모래 누적
+
+				//종료
+				if (x == 0 && y == 0) {
+					cout << total;
+					return;
+				}
+			}
+		}
+	}
+}
+int main() {
+	input();//입력
+	tonado();//토네이도 이동
+	return 0;
+}
