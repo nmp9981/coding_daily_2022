@@ -1,0 +1,46 @@
+#include <iostream>
+#include <algorithm>
+using namespace std;
+
+int n,m,ans;
+bool button_off[10];//고장난 버튼
+
+//입력
+void input() {
+	cin >> n>>m;
+	//고장난 버튼 입력
+	for (int i = 0; i < m; i++) {
+		int a;
+		cin >> a;
+		button_off[a] = true;
+	}
+	ans = abs(n - 100);//처음채널 100
+}
+
+//숫자 탐색
+void dfs(int digit, int num, int cnt) {
+	//숫자완성
+	if (digit == cnt) {
+		ans = min(ans, abs(num - n)+digit);
+		return;
+	}
+	//다음 숫자
+	for (int i = 0; i <= 9; i++) {
+		if (button_off[i]) continue;//고장난 버튼이면 다음으로
+		int next = num * 10 + i;
+		dfs(digit, next, cnt + 1);
+	}
+}
+int main() {
+	//빠른 입력
+	ios_base::sync_with_stdio(false);
+	cin.tie(0);
+
+	input();//입력
+	//자릿수
+	for (int digit = 1; digit <= 6; digit++) {
+		dfs(digit, 0, 0);//숫자 탐색
+	}
+	cout << ans;
+	return 0;
+}
