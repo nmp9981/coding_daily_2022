@@ -1,0 +1,34 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Runner : MonoBehaviour
+{
+    [SerializeField] float MoveSpeed = 0.04f;//속력
+
+    //벽과 충돌
+    void OnCollisionEnter2D(Collision2D other)
+    {
+        Debug.Log("Collision");
+    }
+    //트리거와 충돌
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        Debug.Log("Trigger");
+    }
+    
+    // Start is called before the first frame update
+    void Start()
+    {
+        
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        float MoveAmount = Input.GetAxis("Horizontal")*MoveSpeed;//x축 이동량
+        transform.Translate(MoveAmount, 0, 0);//x축 이동
+        float MoveAmountVT = Input.GetAxis("Vertical") * MoveSpeed;//y축 이동량
+        transform.Translate(0,MoveAmountVT, 0);//y축 이동
+    }
+}
