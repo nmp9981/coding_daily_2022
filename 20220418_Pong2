@@ -1,0 +1,65 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class MoveBall : MonoBehaviour
+{
+    public Text LifePoint;//점수
+    Vector3 StartPosition = new Vector3(0, 0, 0);//시작 위치
+    [SerializeField] float BallSpeed = 0.05f;//공의 속도
+    [SerializeField] float BallTheta = Mathf.PI/18.0f;//공의 각도
+    int Life = 3;//초기 생명
+
+    //벽과 충돌
+    void OnCollisionEnter2D(Collision2D other)
+    {
+        BallSpeed *= (-1f);
+        BallTheta = (-1.2f*BallTheta) % Mathf.PI;
+    }
+    //게임 종료
+    void GameExit()
+    {
+        Application.Quit();
+    }
+    // Start is called before the first frame update
+    void Start()
+    {
+        
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        Vector3 Pos;//위치
+        //공의 위치 갱신
+        float Ball_X = BallSpeed*Mathf.Cos(BallTheta);
+        float Ball_Y = BallSpeed*Mathf.Sin(BallTheta);
+        transform.Translate(Ball_X, Ball_Y, 0);
+        Pos = transform.position;//공의 현재 위치 구하기
+        LifePoint.text = "Life : "+Life.ToString();//생명 텍스트를 화면에 표시
+
+        //공이 밖으로 나가면 시작지점으로 리스폰
+        if (Pos.x < -9f)
+        {
+            transform.position = StartPosition;//시작지점으로 리스폰
+            Life -= 1;//생명 감소
+        }else if (Pos.x > 9f)
+        {
+            transform.position = new Vector3(8.2f, Pos.y, 0);//위치보정
+        }else if(Pos.y > 4.8f)
+        {
+            transform.position = new Vector3(Pos.x, 4.0f, 0);//위치보정
+        }
+        else if(Pos.y < -5.2f)
+        {
+            transform.position = new Vector3(Pos.x, -4.4f, 0);//위치보정
+        }
+        //생명이 모두 떨어지면 아웃
+        if (Life < 0)
+        {
+            LifePoint.text = "OUT";
+            GameExit();
+        }
+    }
+}
