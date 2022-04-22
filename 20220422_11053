@@ -1,0 +1,38 @@
+#include <iostream>
+#include <algorithm>
+using namespace std;
+
+int n, max_cnt;
+const int maxi = 1001;
+int A[maxi];//수열 A
+int dp[maxi];//LIS수열
+
+//입력
+void input() {
+	cin >> n;
+	for (int i = 0; i < n; i++) {
+		cin >> A[i];
+		dp[i] = 1;//길이는 1부터 시작
+	}
+}
+//LIS
+void LIS() {
+	max_cnt = 1;
+	for (int i = 1; i < n; i++) {
+		for (int j = 0; j < i; j++){
+			//더 큰수가 올 경우에만
+			if(A[i]>A[j]) dp[i] = max(dp[i], dp[j] + 1);//길이 갱신
+		}
+		max_cnt = max(dp[i], max_cnt);
+	}
+	cout << max_cnt;//출력
+}
+int main() {
+	//빠른 입력
+	ios_base::sync_with_stdio(false);
+	cin.tie(0);
+
+	input();//입력
+	LIS();//최장 증가 수열
+	return 0;
+}
