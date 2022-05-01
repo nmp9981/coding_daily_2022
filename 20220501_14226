@@ -1,0 +1,58 @@
+#include <iostream>
+#include <queue>
+#include <cstring>
+using namespace std;
+
+int s;
+const int maxi = 2001;
+bool visit[maxi][maxi];//i개 화면 j개 저장 방문체크
+
+//입력
+void input() {
+	cin >> s;
+	memset(visit, false, sizeof(visit));//초기화
+}
+
+//이모티콘 
+void imog() {
+	queue<pair<int, pair<int, int>>> q;//시간, 화면, 저장
+	q.push({ 0,{1,0} });
+	visit[1][0] = true;
+
+	while (!q.empty()) {
+		int sec = q.front().first;
+		int monitor = q.front().second.first;
+		int storage = q.front().second.second;
+		q.pop();
+		
+		if (monitor == s) {//목표도달
+			cout << sec;
+			return;
+		}
+
+		//복사
+		if (visit[monitor][monitor] == false) {
+			visit[monitor][monitor] = true;
+			q.push({ sec + 1,{monitor,monitor} });
+		}
+		//붙여넣기
+		if (visit[monitor+storage][storage] == false && monitor+storage<maxi && storage>0) {
+			visit[monitor+storage][storage] = true;
+			q.push({ sec + 1,{monitor+storage,storage} });
+		}
+		//삭제
+		if (visit[monitor-1][storage] == false && monitor>1) {
+			visit[monitor-1][storage] = true;
+			q.push({ sec + 1,{monitor-1,storage} });
+		}
+	}
+}
+int main() {
+	//빠른 입력
+	ios_base::sync_with_stdio(false);
+	cin.tie(0);
+
+	input();//입력
+	imog();//이모티콘
+	return 0;
+}
