@@ -1,0 +1,56 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class FireBall : MonoBehaviour
+{
+    Rigidbody2D fireballRigid;
+
+    [Header("FireBall")]
+    [SerializeField] float FireBall_HP;
+    [SerializeField] int FireBall_Lv;//레벨
+
+    public float Current_HP;//현재 HP
+    public float Current_EXP;//현재 EXP
+    public float[] Require_EXP = new float[] { 0, 30, 50, 80, 140, 210000 };//요구 exp배열
+    Color[] FireballColor = new Color[] { Color.red, new Color(1.0f,0.5f,0f),Color.yellow,Color.white,Color.blue };//색 배열
+
+    SpriteRenderer spriteRenderer;
+    // Start is called before the first frame update
+    void Start()
+    {
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        spriteRenderer.color = Color.red;
+        FireBall_Lv = 1;//시작 레벨
+        Current_HP = FireBall_HP;//처음엔 풀피
+        fireballRigid = GetComponent<Rigidbody2D>();
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        LevelUP();
+    }
+    //충돌시
+    void OnCollisionEnter2D(Collision2D other)
+    {
+        if(other.gameObject.tag == "tree")//나무에 닿으면 경험치 증가
+        {
+            Current_EXP += 10f;
+        }else if(other.gameObject.tag == "water")//물에 닿으면 체력 감소
+        {
+            Current_HP -= 1;
+        }
+    }
+    //레벨업
+    void LevelUP()
+    {
+        if (Current_EXP >= Require_EXP[FireBall_Lv])//요구 경험치를 넘으면
+        {
+            FireBall_Lv += 1;//레벨업
+            Current_EXP = 0;//경험치 초기화
+            spriteRenderer.color = FireballColor[FireBall_Lv - 1];//색 변화
+            //강화
+        }
+    }
+}
