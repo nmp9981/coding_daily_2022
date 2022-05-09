@@ -1,0 +1,66 @@
+#include <iostream>
+#include <algorithm>
+using namespace std;
+
+int n, ans;
+double width,height;
+const int maxi = 51;
+double building[maxi];//빌당의 높이
+
+//입력
+void input() {
+	cin >> n;
+	for (int i = 0; i < n; i++) cin >> building[i];
+}
+
+//i빌딩에서 j빌딩이 보이는가?
+bool chk(int i,int j) {
+	double delta_height = abs(building[j]-building[i]);//높이 차
+	double delta_width = abs(i - j);
+
+	if (i < j) {//오른쪽
+		for (int x = i + 1; x < j; x++) {
+			width = (double) abs(i - x);//x축 거리
+			//제한 높이 구하기
+			if (building[i] <= building[x]) height = building[i] + delta_height * width / delta_width;
+			else if (building[i] > building[x]) height = building[i] - delta_height * width / delta_width;
+			//제한 높이 이상인가?
+			if (height <= building[x]) return false;
+		}
+	}
+	else {//왼쪽
+		for (int x = i-1; x > j; x--) {
+			width = (double) abs(i - x);//x축 거리
+			//제한 높이 구하기
+			if (building[i] <= building[x]) height = building[i] + delta_height * width / delta_width;
+			else if (building[i] > building[x]) height = building[i] - delta_height * width / delta_width;
+			//제한 높이 이상인가?
+			if (height <= building[x]) return false;
+		}
+	}
+	return true;
+}
+//보이는 빌딩의 개수
+void building_number() {
+	//기준 빌딩
+	for (int i = 0; i < n; i++) {
+		int cnt = 0;
+		for (int j = 0; j < n; j++) {
+			if (i == j) continue;//같은 빌딩이면 세지않는다.
+			if (chk(i, j)) cnt++;//보이는 빌딩이면 개수 추가
+		}
+		//cout << cnt << "\n";
+		ans = max(ans, cnt);//최대 갯수 갱신
+	}
+	cout << ans;//출력
+}
+
+int main() {
+	//빠른 입력
+	ios_base::sync_with_stdio(false);
+	cin.tie(0);
+
+	input();//입력
+	building_number();//보이는 빌딩의 개수
+	return 0;
+}
