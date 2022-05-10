@@ -1,0 +1,78 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class FireBall : MonoBehaviour
+{
+    Rigidbody2D fireballRigid;
+
+    [Header("FireBall")]
+    [SerializeField] float FireBall_HP = 30;
+    [SerializeField] int FireBall_Lv = 1;//레벨
+    [SerializeField] float Player_Exp = 5;//회득 경험치
+
+    public float Current_HP;//현재 HP
+    public float Current_EXP;//현재 EXP
+    public float Rate_HP;//HP비율
+    public float[] Require_EXP = new float[] { 0, 30, 50, 80, 140, 210000 };//요구 exp배열
+    Color[] FireballColor = new Color[] { Color.red, new Color(1.0f,0.5f,0f),Color.yellow,Color.white,Color.blue };//색 배열
+
+    [Header("HPManage")]
+    [SerializeField] public float water_damage;//피격데미지
+    [SerializeField] public float item_heal;//회복량
+    [SerializeField] public float exp_boundary = 0.3f;//경험치 상승 기준점
+
+    SpriteRenderer spriteRenderer;
+    // Start is called before the first frame update
+    void Start()
+    {
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        spriteRenderer.color = Color.red;
+        FireBall_Lv = 1;//시작 레벨
+        Current_HP = FireBall_HP;//처음엔 풀피
+        fireballRigid = GetComponent<Rigidbody2D>();
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        LevelUP();
+        SizeHP();
+    }
+    //충돌시
+    void OnCollisionEnter2D(Collision2D other)
+    {
+        if(other.gameObject.tag == "water")//물에 닿으면 체력 감소
+        {
+            Current_HP -= water_damage;
+            Current_HP = Mathf.Max(Current_HP, 0);//HP가 0보다 작아질 수 없음
+        }else if(other.gameObject.tag == "tree")
+        {
+            Current_HP += item_heal;
+            Current_HP = Mathf.Min(Current_HP, FireBall_HP);//최대 HP를 넘길 수 없음
+        }
+    }
+    //레벨업
+    void LevelUP()
+    {
+        if (Rate_HP >= exp_boundary)
+        {
+            Current_EXP += Time.deltaTime * Player_Exp;//초당 5획득
+        }
+        
+        if (Current_EXP >= Require_EXP[FireBall_Lv])//요구 경험치를 넘으면
+        {
+            FireBall_Lv += 1;//레벨업
+            Current_EXP = 0;//경험치 초기화
+            Current_HP = FireBall_HP;//풀피
+            spriteRenderer.color = FireballColor[FireBall_Lv - 1];//색 변화
+            //강화
+        }
+    }
+    //HP에따른 크기
+    void SizeHP()
+    {
+        Rate_HP = 1.0f*Current_HP / FireBall_HP;//HP비율
+        transform.localScale = Vector3.Lerp(new Vector3(1.0f,1.0f,0f), new Vector3(3.0f,3.0f,0f), Rate_HP);//비율에 따른 크기
+    }
+}
