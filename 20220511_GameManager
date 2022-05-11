@@ -1,0 +1,26 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class GameManager : MonoBehaviour
+{
+    FireBall fireball;
+    // Start is called before the first frame update
+    void Start()
+    {
+        fireball = GameObject.FindWithTag("FireBall").GetComponent<FireBall>();//FireBall 스크립트에서 변수 가져오기
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        Game_End();
+    }
+    void Game_End()
+    {
+        if(fireball.Current_HP <= 0)//피가 0이면
+        {
+            //게임오버 스크립트
+        }
+    }
+}
