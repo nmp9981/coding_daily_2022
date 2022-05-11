@@ -1,0 +1,52 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class PersonMov : MonoBehaviour
+{
+    private GameObject Person; // 불 막아주는 사람
+    private float speed = 3.0f; // 사람 속도
+    private float End_Position_x = 3.7f;//끝 위치
+    private float Position_y;//캐릭터의 y축 위치
+    bool left, right; // 왼쪽, 오른쪽 이동 버튼
+    
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        Person = GameObject.Find("Person");
+        Position_y = Person.transform.position.y;
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        if (left) Person.GetComponent<Transform>().position += Vector3.left * speed * Time.deltaTime;
+        if (right) Person.GetComponent<Transform>().position += Vector3.right * speed * Time.deltaTime;
+        //범위초과
+        if (Person.transform.position.x > 3.7f)
+        {
+            Person.transform.position = new Vector3(End_Position_x,Position_y,0);
+        }
+        else if(Person.transform.position.x < -3.7f)
+        {
+            Person.transform.position = new Vector3(-End_Position_x, Position_y, 0);
+        }
+    }
+    public void goleft() //왼쪽 이동
+    {
+        left = true;
+    }
+    public void stopleft() //왼쪽 이동 멈춤
+    {
+        left = false;
+    }
+    public void goright() //오른쪽 이동
+    {
+        right = true;
+    }
+    public void stopright() //오른쪽 이동 멈춤
+    {
+        right = false;
+    }
+}
