@@ -1,0 +1,42 @@
+#include <iostream>
+#include <algorithm>
+#include <cstring>
+using namespace std;
+
+int n, x;
+const int maxi = 1000001;
+const int nano = 1e+7;
+int lego[maxi];
+
+//입력
+void input() {
+	memset(lego, 0, sizeof(lego));//초기화
+	for (int i = 0; i < n; i++) cin >> lego[i];
+	sort(lego, lego + n);//정렬
+}
+
+//로봇 프로젝트
+void robot() {
+	int left = 0;
+	int right = n - 1;
+	while (left < right) {
+		if (lego[left] + lego[right] == x * nano) {
+			cout << "yes " << lego[left] << " " << lego[right] << "\n";
+			return;
+		}
+		else if (lego[left] + lego[right] < x * nano) left++;
+		else right--;
+	}
+	cout << "danger\n";
+}
+int main() {
+	//빠른 입력
+	ios_base::sync_with_stdio(false);
+	cin.tie(0);
+
+	while (cin >> x >> n) {
+		input();//입력
+		robot();//로봇 프로젝트
+	}
+	return 0;
+}
