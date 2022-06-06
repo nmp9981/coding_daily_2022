@@ -1,0 +1,193 @@
+#include <iostream>
+#include <algorithm>
+#include <cstring>
+using namespace std;
+
+int k,num,dir;
+string s;
+const int wheelnum = 4, gear = 8;//톱니의 개수, 기어의 개수
+int cogwheel[wheelnum][gear];//톱니바퀴
+
+//입력
+void input() {
+	//초기 톱니 상태
+	for (int i = 0; i < wheelnum; i++) {
+		cin >> s;
+		for (int j = 0; j < gear; j++) {
+			cogwheel[i][j] = s[j] - '0';//하나씩 받기
+		}
+	}
+}
+
+//회전
+void ClockRotation(int x, int dir) {
+	int cogline[gear];//임의의 배열 받기
+	if (dir == 1) {//시계
+		int rest = cogwheel[x][gear-1];
+		for (int i = 1; i < gear; i++) {
+			cogline[i] = cogwheel[x][i-1];
+		}
+		cogline[0] = rest;
+	}
+	else if (dir == -1) {//반시계
+		int rest = cogwheel[x][0];
+		for (int i = gear-1; i >= 1; i--) {
+			cogline[i - 1] = cogwheel[x][i];
+		}
+		cogline[gear-1] = rest;
+	}
+	//회전후의 톱니바퀴
+	for (int i = 0; i < gear; i++) cogwheel[x][i] = cogline[i];
+}
+
+//몇번 회전시킬지 선택
+void Rotates(int num, int dir) {
+	switch (num) {
+	case 0:
+		if (cogwheel[0][2] == cogwheel[1][6]) {//가까운곳부터
+			ClockRotation(0, dir);
+		}
+		else if (cogwheel[0][2] != cogwheel[1][6]) {
+			if (cogwheel[1][2] == cogwheel[2][6]) {
+				ClockRotation(0, dir);
+				ClockRotation(1,-dir);
+			}
+			else if (cogwheel[1][2] != cogwheel[2][6]) {
+				if (cogwheel[2][2] == cogwheel[3][6]) {
+					ClockRotation(0, dir);
+					ClockRotation(1, -dir);
+					ClockRotation(2, dir);
+				}
+				else if (cogwheel[2][2] != cogwheel[3][6]) {
+					ClockRotation(0, dir);
+					ClockRotation(1, -dir);
+					ClockRotation(2, dir);
+					ClockRotation(3, -dir);
+				}
+			}
+		}
+		break;
+	case 1:
+		if (cogwheel[0][2] == cogwheel[1][6]) {
+			if (cogwheel[1][2] == cogwheel[2][6]) {
+				ClockRotation(1, dir);
+			}
+			else if (cogwheel[1][2] != cogwheel[2][6]) {
+				if (cogwheel[2][2] == cogwheel[3][6]) {
+					ClockRotation(1, dir);
+					ClockRotation(2, -dir);
+				}
+				else if (cogwheel[2][2] != cogwheel[3][6]) {
+					ClockRotation(1, dir);
+					ClockRotation(2, -dir);
+					ClockRotation(3, dir);
+				}
+			}
+		}
+		else if (cogwheel[0][2] != cogwheel[1][6]) {
+			if (cogwheel[1][2] == cogwheel[2][6]) {
+				ClockRotation(0, -dir);
+				ClockRotation(1, dir);
+			}
+			else if (cogwheel[1][2] != cogwheel[2][6]) {
+				if (cogwheel[2][2] == cogwheel[3][6]) {
+					ClockRotation(0, -dir);
+					ClockRotation(1, dir);
+					ClockRotation(2, -dir);
+				}
+				else if (cogwheel[2][2] != cogwheel[3][6]) {
+					ClockRotation(0, -dir);
+					ClockRotation(1, dir);
+					ClockRotation(2, -dir);
+					ClockRotation(3, dir);
+				}
+			}
+		}
+		break;
+	case 2:
+		if (cogwheel[2][2] == cogwheel[3][6]) {
+			if (cogwheel[1][2] == cogwheel[2][6]) {
+				ClockRotation(2, dir);
+			}
+			else if (cogwheel[1][2] != cogwheel[2][6]) {
+				if (cogwheel[0][2] == cogwheel[1][6]) {
+					ClockRotation(1, -dir);
+					ClockRotation(2, dir);
+				}
+				else if (cogwheel[0][2] != cogwheel[1][6]) {
+					ClockRotation(0, dir);
+					ClockRotation(1, -dir);
+					ClockRotation(2, dir);
+				}
+			}
+		}
+		else if (cogwheel[2][2] != cogwheel[3][6]) {
+			if (cogwheel[1][2] == cogwheel[2][6]) {
+				ClockRotation(2, dir);
+				ClockRotation(3, -dir);
+			}
+			else if (cogwheel[1][2] != cogwheel[2][6]) {
+				if (cogwheel[0][2] == cogwheel[1][6]) {
+					ClockRotation(1, -dir);
+					ClockRotation(2, dir);
+					ClockRotation(3, -dir);
+				}
+				else if (cogwheel[0][2] != cogwheel[1][6]) {
+					ClockRotation(0, dir);
+					ClockRotation(1, -dir);
+					ClockRotation(2, dir);
+					ClockRotation(3, -dir);
+				}
+			}
+		}
+		break;
+	case 3:
+		if (cogwheel[2][2] == cogwheel[3][6]) {
+			ClockRotation(3, dir);
+		}
+		else if (cogwheel[2][2] != cogwheel[3][6]) {
+			if (cogwheel[1][2] == cogwheel[2][6]) {
+				ClockRotation(3, dir);
+				ClockRotation(2, -dir);
+			}
+			else if (cogwheel[1][2] != cogwheel[2][6]) {
+				if (cogwheel[0][2] == cogwheel[1][6]) {
+					ClockRotation(3, dir);
+					ClockRotation(2, -dir);
+					ClockRotation(1, dir);
+				}
+				else if (cogwheel[0][2] != cogwheel[1][6]) {
+					ClockRotation(3, dir);
+					ClockRotation(2, -dir);
+					ClockRotation(1, dir);
+					ClockRotation(0, -dir);
+				}
+			}
+		}
+		break;
+	}
+}
+
+//톱니바퀴
+void WheelnumRotation() {
+	cin >> k;//회전 횟수
+	for (int i = 0; i < k; i++) {
+		cin >> num >> dir;
+		Rotates(num - 1, dir);//몇번 회전했는가?
+	}
+}
+//점수
+void score() {
+	cout << cogwheel[0][0] + 2 * cogwheel[1][0] + 4 * cogwheel[2][0] + 8 * cogwheel[3][0];
+}
+
+int main() {
+	//빠른 입력
+	ios_base::sync_with_stdio(false);
+	cin.tie(0);
+
+	input();//입력
+	WheelnumRotation();//톱니 회전
+	score();//점수
+	return 0;
+}
