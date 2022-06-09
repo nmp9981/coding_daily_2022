@@ -1,0 +1,90 @@
+#include <iostream>
+#include <algorithm>
+#include <array>
+using namespace std;
+
+class String {
+    char* str;//배열
+    int len;
+
+public:
+    String(char c, int n);  // 문자 c 가 n 개 있는 문자열로 정의
+    String(const char *str_);//추가할 문자
+    String(const string &s);//생성자 복사
+    ~String();
+
+    void add_string(const string &s);   // str 뒤에 s 를 붙인다.
+    void copy_string(const string &s);  // str 에 s 를 복사한다.
+    int strlen();//문자열 길이 리턴 
+    void Print();//출력
+};
+
+//생성자
+String::String(char c, int n){
+    str = new char[n+1];
+    len = n;
+    
+    for(int i=0;i<n;i++){
+        str[i] = c;
+    }
+}
+
+String::String(const char* str_){
+    len = sizeof(str_);
+    str = new char[len+1];
+    strcpy_s(str,len,str_);
+}
+
+//복사 생성자
+String::String(const String &s){
+    len = s.len;
+    str = new char[s.len+1];
+    strcpy_s(str,len,s.str);
+}
+//소멸자
+String::~String(){
+    if(str != nullptr){
+        delete[] str;
+        cout<<"소멸자 호출"<<"\n";
+    }
+}
+
+//문자 추가
+void String::add_string(const string &s){
+    len = len + s.len;//길이를 더하고
+    char* temp = new char[len+1];//옮길 메모리를 만들고
+    strcpy_s(temp,len+1,str);//현 str을 temp로 복사
+    strcat_s(temp,len+1,s.str);//temp에 s.str을 이어붙임
+    delete[] str;
+    str = new char[len+1];
+    strcpy_s(str,len,temp);//현 temp를 str로 복사
+    delete[] temp;
+}
+//문자 복사
+void String::copy_string(const string &s){
+    delete[] str;
+    len = s.len;
+    str = new char[len+1];
+    strcpy_s(str,len,s.str);
+}
+
+//문자열 길이 리턴
+int String::strlen(){
+    return len;
+}
+//출력
+void String::Print(){
+    cout<<str<<"\n";
+}
+
+int main()
+{
+    String hi("hi");
+    String hello("hello");
+    
+    hi.add_string(hello);
+    
+    hi.Print();
+    hello.Print();
+    return 0;
+}
