@@ -1,0 +1,57 @@
+#include <string>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+const int maxi = 101;
+int parents[maxi];//i의 루트노드
+
+//초기화
+void init(int n){
+    for(int i=0;i<=n;i++) parents[i] = i;
+}
+
+//2번째 기준 정렬
+bool cmp(vector<int> A,vector<int> B){
+    if(A[2]<B[2]) return true;
+    return false;
+}
+
+//각 노드의 루트노드
+int find(int x){
+    if(parents[x] == x) return x;
+    parents[x] = find(parents[x]);
+    return parents[x];
+}
+
+//노드연결
+void connect(int a,int b){
+    if(b>a) parents[b] = a;
+    else parents[a] = b;
+}
+
+//크루스칼 알고리즘
+int solution(int n, vector<vector<int>> costs) {
+    int answer = 0;
+    int node = 0;//노드의 개수
+    init(n);//초기화
+    sort(costs.begin(),costs.end(),cmp);//정렬
+    
+    for(int i=0;i<costs.size();i++){
+        int x = costs[i][0];
+        int y = costs[i][1];
+        int fee = costs[i][2];
+        
+        int a = find(x);
+        int b = find(y);
+        if(a!=b){
+            connect(a,b);
+            node++;
+            answer+=fee;
+        }
+        
+        if(node==n-1) break;
+    }
+    
+    return answer;
+}
