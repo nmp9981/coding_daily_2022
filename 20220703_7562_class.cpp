@@ -3,8 +3,8 @@
 #include<queue>
 using namespace std;
 
-struct Move {
-	Move(int _x, int _y, int _depth) :
+struct Move {//큐에 담을 정보
+	Move(int _x, int _y, int _depth) ://생성자
 		x(_x), y(_y), depth(_depth) {}
 
 	int x;
@@ -19,6 +19,7 @@ public:
 	void input();//입력
 	int bfs();//초기화
 private:
+	//선언부
 	static const int maxi = 304;
 
 	array<array<bool, maxi>, maxi> visited {};//2차원 배열
@@ -36,7 +37,7 @@ void Knight::input() {
 	l += 4;
 	cx += 2; cy += 2; tx += 2; ty += 2;
 	
-	//방문기록
+	//방문기록(패딩)
 	for (int i = 0; i < l; i++) {
 		visited[i][0] = true;
 		visited[i][1] = true;
@@ -45,8 +46,8 @@ void Knight::input() {
 
 		visited[0][i] = true;
 		visited[1][i] = true;
-		visited[l-1][0] = true;
-		visited[l-2][0] = true;
+		visited[l-1][i] = true;
+		visited[l-2][i] = true;
 	}
 }
 //bfs탐색
