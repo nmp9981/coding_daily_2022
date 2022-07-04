@@ -87,9 +87,7 @@ int main() {
 	ios_base::sync_with_stdio(false);
 	cin.tie(0);
 
-	int t;//테스트 케이스
-	cin >> t;
-	while (t--) {
+	while (1) {
 		Knight knight;//기사 클래스
 
 		knight.input();
