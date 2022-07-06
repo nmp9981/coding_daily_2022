@@ -1,0 +1,45 @@
+#include<iostream>
+#include<queue>
+#include<set>
+using namespace std;
+
+int n, m;
+const int maxi = 100001;
+const int inf = 1e+8;
+int card[maxi];//카드 현황
+
+//입력
+void input() {
+	cin >> n >> m;
+	for (int i = 0; i < n; i++) cin >> card[i];
+}
+
+//구매
+void purchase() {
+	set<int> s;//중복여부 검사
+	int pack_size = inf;//팩 크기
+	int cnt = 0;
+	int pack_cnt = 0;//팩의 수
+	for (int i = 0; i < n; i++) {
+		//값 삽입 성공여부 확인
+		auto set_success = s.insert(card[i]);// pair< set<int>::iterator, bool >
+		if (set_success.second == false) {//삽입 실패시 집합 초기화
+			s.clear();
+			pack_size = min(pack_size, cnt);
+		}
+		else {
+			cnt++;
+		}
+		//팩을 모두 구매하면
+		if (pack_cnt == m) break;
+	}
+}
+int main() {
+	//빠른 입력
+	ios_base::sync_with_stdio(false);
+	cin.tie(0);
+
+	input();//입력
+	purchase();//구매
+	return 0;
+}
