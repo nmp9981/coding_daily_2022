@@ -1,0 +1,75 @@
+#include <iostream>
+#include <set>
+#include <queue>
+using namespace std;
+
+int n,m,ans;
+const int maxi = 100001;
+int card[maxi];//카드 정보
+
+//입력
+void input(){
+    cin>>n>>m;
+    for(int i=0;i<n;i++) cin>>card[i];
+}
+
+//크기비교
+inline int max(int x,int y){
+    return x>y? x:y;
+}
+
+//구매
+void purchase(){
+    set<int> s;//상품 목록
+    queue<int> q;//상품 인덱스 목록
+    
+    int left = 1;//구성품의 개수
+    int right = maxi/m;
+    
+    while(left<=right){
+        int mid = (left+right)/2;//구성품의 개수
+        int cnt = 0;//카드팩의 개수
+        s.clear();//초기화
+        
+        for(int i=0;i<n;i++){
+            auto is_insert = s.insert(card[i]);//중복검사
+            if(is_insert.second) q.push(i);//중복이 아닐 경우 인덱스 넣기 
+            else{//중복이면 큐를 비우기
+                //카드팩에 있는 상품은 필요 없어진다.
+                int num = card[i];
+                while(!q.empty()){
+                    int p = q.front();//인덱스
+                    q.pop();
+                    s.erase(card[p]);//원소제거
+                    if(card[p]==num) break;
+                }
+                //새 상품넣기
+                s.insert(card[i]);//상품
+                q.push(i);//인덱스
+            }
+            
+            //카드팩 완성
+            if(s.size()>=mid){
+                cnt++;//카드팩 개수 증가
+                s.clear();//초기화
+                while(!q.empty()) q.pop();
+            }
+        }
+        //팩이 많으면 구성품의 개수가 적다는 뜻이므로 구성품의 개수를 늘린다.
+        if(cnt>=m){
+            ans = max(ans,mid);
+            left = mid+1;
+        }else{
+            right = mid-1;
+        }
+        while(!q.empty()) q.pop();//초기화
+    }
+    cout<<ans;//구성품의 개수
+}
+
+int main()
+{
+    input();//입력
+    purchase();//구매
+    return 0;
+}
