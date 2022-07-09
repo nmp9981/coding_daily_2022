@@ -1,0 +1,68 @@
+#include <iostream>
+using namespace std;
+
+int n, m,ans;
+const int maxi = 5;
+int weapon[maxi][maxi];//무기
+bool visit[maxi][maxi];//검사 여부
+//이동
+int dr[4] = {1,-1,-1,1};
+int dc[4] = {-1,-1,1,1};
+
+//입력
+void input() {
+	cin >> n >> m;
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < m; j++) cin >> weapon[i][j];
+	}
+}
+//크기 비교
+inline int max(int x, int y) {
+	return x > y ? x : y;
+}
+//부메랑 제작
+void boomerang(int r, int c, int sum) {
+	//다음 줄로 이동
+	if (c == m) {
+		c = 0;
+		r++;
+	}
+	//제작 종료
+	if (r == n) {
+		ans = max(ans, sum);
+		return;
+	}
+	//부메랑 제작
+	if (!visit[r][c]) {
+		for (int i = 0; i < 4; i++) {
+			int nr = r + dr[i];
+			int nc = c + dc[i];
+			//범위내에 드는가?
+			if (nr < 0 || nr >= n || nc < 0 || nc >= m) continue;
+			//미방문인가?
+			if (visit[nr][c] || visit[r][nc]) continue;
+
+			//부메랑 합 구하기
+			int next_sum = sum + 2 * weapon[r][c] + weapon[nr][c] + weapon[r][nc];
+			visit[r][c] = true; visit[nr][c] = true; visit[r][nc] = true;//방문 체크
+			boomerang(r, c + 1, next_sum);//다음 부메랑
+			visit[r][c] = false; visit[nr][c] = false; visit[r][nc] = false;//방문 체크 해제
+		}
+	}
+	boomerang(r, c + 1, sum);//다음 위치
+}
+int main()
+{
+	//빠른 입력
+	ios_base::sync_with_stdio(false);
+	cin.tie(0);
+
+	input();//입력
+	//부메랑 제작이 가능한가?
+	if (n == 1 || m == 1) cout << 0;
+	else {
+		boomerang(0, 0, 0);//부메랑 제작
+		cout << ans;//출력
+	}
+    return 0;
+}
