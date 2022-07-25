@@ -1,0 +1,82 @@
+#include <iostream>
+using namespace std;
+
+//선분 구조체
+struct Line {
+	int startX, startY, endX, endY;
+};
+
+//방정식 구조체
+struct Equation {
+	double Coeffi, Constant;
+};
+
+Line L1,L2;//두 선분
+Equation E1, E2;//두 방정식
+const int inf = 200000000;
+
+//입력
+void input() {
+	cin >> L1.startX >> L1.startY >> L1.endX >> L1.endY;
+	cin >> L2.startX >> L2.startY >> L2.endX >> L2.endY;
+}
+
+//1차식 구하기
+void Expression() {
+	//수직
+	if (L1.endX == L1.startX && L2.endX == L2.startX) {
+		E1.Coeffi = inf; E2.Coeffi = inf;
+	}
+	else if (L1.endX == L1.startX) {
+		E1.Coeffi = inf;
+		E2.Coeffi = (double)(L2.endY - L2.startY) / (double)(L2.endX - L2.startX);
+		E2.Constant = (double)L2.endY - E2.Coeffi * (double)L2.endX;
+	}
+	else if (L2.endX == L2.startX) {
+		E1.Coeffi = (double)(L1.endY - L1.startY) / (double)(L1.endX - L1.startX);
+		E1.Constant = (double)L1.endY - E1.Coeffi * (double)L1.endX;
+		E2.Coeffi = inf;
+	}
+	else {
+		//계수
+		E1.Coeffi = (double)(L1.endY - L1.startY) / (double)(L1.endX - L1.startX);
+		E2.Coeffi = (double)(L2.endY - L2.startY) / (double)(L2.endX - L2.startX);
+		//상수
+		E1.Constant = (double)L1.endY - E1.Coeffi * (double)L1.endX;
+		E2.Constant = (double)L2.endY - E2.Coeffi * (double)L2.endX;
+	}
+}
+
+//1차 방정식 풀이
+bool SolveEquation() {
+	double x, y;
+	if (E1.Coeffi == E2.Coeffi) return false;//두 직선이 평행
+	//해 구하기
+	if (L1.endX == L1.startX) {
+		x = L1.endX;
+		y = E2.Coeffi * x + E2.Constant;
+	}
+	else if (L2.endX == L2.startX) {
+		x = L2.endX;
+		y = E1.Coeffi * x + E1.Constant;
+	}
+	else {
+		x = (E2.Constant - E1.Constant) / (E1.Coeffi - E2.Coeffi);//해 구하기
+		y = E1.Coeffi * x + E1.Constant;
+	}
+
+	//cout << x << " " << y<<"\n";
+	//판정
+	if (x >= L1.startX && x <= L1.endX && y >= L1.startY && y <= L1.endY) return true;
+	return false;
+}
+int main(){
+	//빠른 입력
+	ios_base::sync_with_stdio(false);
+	cin.tie(0);
+
+	input();//입력
+	Expression();//1차 방정식 구하기
+	cout<<SolveEquation();//방정식 풀이
+    return 0;
+}
