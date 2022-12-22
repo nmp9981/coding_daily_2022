@@ -16,7 +16,7 @@ int solution(vector<int> arr) {
     int answer = arr[0];
     int g = arr[0];
     for(int i=0;i<arr.size();i++){
-        g = Euclidian(answer,arr[i]);
+        g = Euclidian(answer,arr[i]);//이전 최소공배수와 다음 수의 최대 공약수
         answer = (answer*arr[i])/g;
     }
     return answer;
